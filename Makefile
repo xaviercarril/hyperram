@@ -25,8 +25,8 @@ sudo-prog: $(PROJ).bin
 	@echo 'Executing prog as root!!!'
 	sudo iceprog $<
 
-debug-vga:
-	iverilog -o test vga_tb.v VgaSyncGen.v
+debug-ram:
+	iverilog -o test hyper_xface_tb.v hyper_xface.v
 	vvp test -fst
 	gtkwave test.vcd gtk.gtkw
 
