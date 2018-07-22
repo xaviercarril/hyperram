@@ -1,6 +1,15 @@
-set_io --warn-no-port led 95 # centre green
-set_io --warn-no-port clk 21
+set_io --warn-no-port leds[4] 95
+set_io --warn-no-port leds[3] 96
+set_io --warn-no-port leds[2] 97
+set_io --warn-no-port leds[1] 98
+set_io --warn-no-port leds[0] 99
 
+set_io --warn-no-port clk 21
+set_io --warn-no-port dram_rwds_oe 44
+set_io --warn-no-port dram_dq_oe  45
+
+set_io --warn-no-port rx   9
+set_io --warn-no-port tx   8
 
 set_io --warn-no-port dram_dq[0] 114
 set_io --warn-no-port dram_dq[1] 118

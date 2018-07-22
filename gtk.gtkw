@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
-[*] Sun Jul 22 11:20:28 2018
+[*] Sun Jul 22 12:28:26 2018
 [*]
 [dumpfile] "/home/matt/work/fpga/hyperram/test.vcd"
-[dumpfile_mtime] "Sun Jul 22 11:19:28 2018"
-[dumpfile_size] 6721
+[dumpfile_mtime] "Sun Jul 22 12:26:48 2018"
+[dumpfile_size] 2142
 [savefile] "/home/matt/work/fpga/hyperram/gtk.gtkw"
-[timestart] 4125
+[timestart] 0
 [size] 1681 1120
 [pos] 525 129
-*-6.000000 4761 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-7.000000 157 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] test.
 [sst_width] 263
 [signals_width] 373
@@ -19,9 +19,11 @@
 test.hyper_xface_0.clk
 test.hyper_xface_0.dram_ck
 test.hyper_xface_0.dram_rwds_oe_l
+@29
+test.hyper_xface_0.dram_dq_oe_l
+@28
 test.hyper_xface_0.dram_rwds_out
 test.hyper_xface_0.dram_cs_l
-test.hyper_xface_0.dram_dq_oe_l
 @22
 test.hyper_xface_0.dram_dq_out[7:0]
 test.hyper_xface_0.dram_rd_d[7:0]
@@ -54,11 +56,6 @@ test.hyper_xface_0.rwds_in_loc
 test.hyper_xface_0.rd_fsm[2:0]
 test.hyper_xface_0.rd_cnt[3:0]
 test.hyper_xface_0.fsm_addr[2:0]
-@24
-test.start_delay_reg[10:0]
-@28
-test.start_delay
-@22
 test.hyper_xface_0.fsm_wait[5:0]
 test.hyper_xface_0.fsm_data[3:0]
 test.hyper_xface_0.latency_1x[7:0]

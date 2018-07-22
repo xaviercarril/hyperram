@@ -2,7 +2,7 @@ PROJ = hyperram
 PIN_DEF = icestick.pcf
 DEVICE = hx1k
 
-SRC = top.v hyper_xface.v
+SRC = top.v hyper_xface.v baudgen.v baudgen_rx.v uart_rx.v uart_tx.v
 
 all: $(PROJ).bin
 

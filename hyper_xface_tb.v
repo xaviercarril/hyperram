@@ -20,7 +20,6 @@ module test;
      $dumpon;
      # 1
      reset <= 0;
-     /*
      # 10
      addr <= 32'h012345;
      wr_d <= 32'h012345;
@@ -40,8 +39,6 @@ module test;
      # 2
      wait(hyper_xface_0.busy == 0);
      # 100
-     */
-     # 6000
      
      $finish;
   end
@@ -71,6 +68,7 @@ module test;
 
   always #1 clk = !clk;
 
+/*
     //part requires 150us on startup = 1800 cycles at 12Mhz. use an 11 bit reg to count
     reg [10:0] start_delay_reg = 0;
 
@@ -91,6 +89,7 @@ module test;
                 wr_req <= 0;
         end
     end
+    */
 
 endmodule
 

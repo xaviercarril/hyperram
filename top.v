@@ -1,4 +1,5 @@
 `default_nettype none
+`include "baudgen.vh"
 
 module top (
 	input  clk,
@@ -8,20 +9,38 @@ module top (
     output dram_ck,
     output dram_rst_l,
     output dram_cs_l,
+    output dram_rwds_oe,
+    output dram_dq_oe,
+
+
+    input rx,
+    output tx,
 
     // leds
-    output led
+    output [4:0] leds
 
 
 );
 
-    assign led = 1;
+    reg [3:0] clk_div;
+    always @(posedge clk)
+        clk_div <= clk_div + 1;
 
-    wire reset = 0;
+    wire hram_clk = clk_div[3];
+    reg reset = 1;
+    wire nreset = ~ reset;
+
+    always @(posedge clk)
+        reset <= 0;
+
     wire [7:0] data_pins_in;
     wire [7:0] data_pins_out;
     wire dram_dq_oe_l;
+    assign dram_dq_oe = ~dram_dq_oe_l;
+    assign dram_rwds_oe = ~dram_rwds_oe_l;
 
+
+    wire rd_rdy;
     reg rd_req = 0;
     reg wr_req = 0;
 
@@ -57,6 +76,7 @@ module top (
         .D_IN_0(dram_rwds_in),
     );
 
+    /*
     //part requires 150us on startup = 1800 cycles at 12Mhz. use an 11 bit reg to count
     reg [10:0] start_delay_reg = 0;
 
@@ -69,21 +89,26 @@ module top (
 
     always @(posedge clk) begin
         if(start_delay) begin
-            if(busy == 0 && wr_req == 0) begin
+            //if(busy == 0 && wr_req == 0) begin
+            if(busy == 0 && rd_req == 0) begin
                 addr <= addr + 1;
-                wr_d <= wr_d + 1;
-                wr_req <= 1;
+                //wr_d <= wr_d + 1;
+                //wr_req <= 1;
+                rd_req <= 1;
             end else
-                wr_req <= 0;
+                rd_req <= 0;
+                //wr_req <= 0;
         end
     end
+    */
 
-    hyper_xface hyper_xface_0(.reset(reset), .clk(clk),
+    hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
     // module control
     .rd_req(rd_req),
     .wr_req(wr_req),
     .wr_d(wr_d),
     .rd_d(rd_d),
+    .rd_rdy(rd_rdy),
     .wr_byte_en(wr_byte_en),
     .rd_num_dwords(rd_num_dwords),
     .addr(addr),
@@ -102,35 +127,75 @@ module top (
     .dram_rst_l(dram_rst_l),
     .dram_cs_l(dram_cs_l));
 
-endmodule
+    //-- Parametro: Velocidad de transmision
+    localparam BAUD = `B115200;
+
+    //-- Señal de dato recibido
+    wire rcv;
+
+    //-- Datos recibidos
+    wire [7:0] rxdata;
+    wire [7:0] txdata;
+
+    //-- Señal de reset
+    reg rstn = 0;
+
+    //-- Señal de transmisor listo
+    wire ready;
+    wire logic_ce;
+    //-- Inicializador
+
+    //-- Instanciar la unidad de recepcion
+    uart_rx RX0 (.clk(clk),      //-- Reloj del sistema
+           .rstn(nreset),    //-- Señal de reset
+           .rx(rx),        //-- Linea de recepción de datos serie
+           .rcv(rcv),      //-- Señal de dato recibido
+           .data(rxdata)     //-- Datos recibidos
+          );
+
+    //-- Instanciar la unidad de transmision
+    uart_tx TX0 ( .clk(clk),        //-- Reloj del sistema
+             .rstn(nreset),     //-- Reset global (activo nivel bajo)
+             .start(tx_strb),     //-- Comienzo de transmision
+             .data(txdata),     //-- Dato a transmitir
+             .tx(tx),         //-- Salida de datos serie (hacia el PC)
+             .ready(ready)    //-- Transmisor listo / ocupado
+           );
+
+    wire tx_strb;
+
+    always @(posedge clk)
+        logic_ce <= (rcv)&&(rxdata == 8'h00);
+
     /*
-(
-  input  wire         reset,
-  input  wire         clk,
-  input  wire         rd_req,
-  input  wire         wr_req,
-  input  wire         mem_or_reg,
-  input  wire [3:0]   wr_byte_en,
-  input  wire [5:0]   rd_num_dwords,
-  input  wire [31:0]  addr,
-  input  wire [31:0]  wr_d,
-  output reg  [31:0]  rd_d,
-  output reg          rd_rdy,
-  output reg          busy,
-  output reg          burst_wr_rdy,
-  input  wire [7:0]   latency_1x,
-  input  wire [7:0]   latency_2x,
+    always @(posedge clk)
+        if (logic_ce)
+        begin
+            leds <= leds + 1;
+        end
+        */
+  reg [7:0] ram_data;
+  // latch data when it's ready
+  always @(posedge rd_rdy)
+    ram_data <= rd_d;
 
-  input  wire [7:0]   dram_dq_in,
-  output reg  [7:0]   dram_dq_out,
-  output reg          dram_dq_oe_l,
+    assign leds = ram_data;
 
-  input  wire         dram_rwds_in,
-  output reg          dram_rwds_out,
-  output reg          dram_rwds_oe_l,
+    always @(posedge clk)
+        if (rcv)
+        begin
+            tx_strb <= 1'b1;
+            case(rxdata)
+                8'h00: txdata <= 8'h00;
+                8'h01: txdata <= leds;
+                8'h02: rd_req <= 1;
+                8'h03: begin addr <= addr + 1; txdata <= addr; end
+                8'h04: begin rd_req <= 0; txdata <= ram_data; end
+                8'h05: wr_req <= 1;
+                8'h06: wr_req <= 0;
+                default: txdata <= 8'h00;
+            endcase
+        end else
+            tx_strb <= 1'b0;
 
-  output reg          dram_ck,
-  output wire         dram_rst_l,
-  output wire         dram_cs_l,
-  output wire [7:0]   sump_dbg
-  */
+endmodule
