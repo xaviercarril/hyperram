@@ -22,7 +22,7 @@ module top (
 
 );
 
-    reg [3:0] clk_div;
+    reg [1:0] clk_div;
     always @(posedge clk)
         clk_div <= clk_div + 1;
 
@@ -101,8 +101,7 @@ module top (
         end
     end
     */
-
-    hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
+    hyper_xface hyper_xface_0(.reset(reset), .clk(clk),
     // module control
     .rd_req(rd_req),
     .wr_req(wr_req),
@@ -174,28 +173,42 @@ module top (
             leds <= leds + 1;
         end
         */
-  reg [7:0] ram_data;
+  reg [31:0] ram_data;
+
+  reg [39:0] rx_reg = 0;
+  reg [31:0] tx_reg = 0;
+  reg [2:0] rx_byte_cnt = 0;
+
   // latch data when it's ready
   always @(posedge rd_rdy)
     ram_data <= rd_d;
 
-    assign leds = ram_data;
+  assign leds = addr;
 
-    always @(posedge clk)
-        if (rcv)
-        begin
-            tx_strb <= 1'b1;
-            case(rxdata)
-                8'h00: txdata <= 8'h00;
-                8'h01: txdata <= leds;
-                8'h02: rd_req <= 1;
-                8'h03: begin addr <= addr + 1; txdata <= addr; end
-                8'h04: begin rd_req <= 0; txdata <= ram_data; end
-                8'h05: wr_req <= 1;
-                8'h06: wr_req <= 0;
-                default: txdata <= 8'h00;
+  always @(posedge clk)
+    if (rcv) begin
+        tx_strb <= 1'b1;
+        txdata <= tx_reg[31:24]; 
+        tx_reg <= tx_reg << 8;
+        
+        rx_reg <= {rx_reg[31:0], rxdata};
+        rx_byte_cnt <= rx_byte_cnt + 1;
+        if(rx_byte_cnt == 5) begin
+            case(rx_reg[39:32])
+                8'h01: begin addr <= rx_reg[31:0]; tx_reg <= rx_reg[31:0]; end
+                8'h02: begin wr_d <= rx_reg[31:0]; tx_reg <= rx_reg[31:0]; end
+                8'h03: begin wr_req <= 1; tx_reg <= 32'h03; end
+                8'h04: tx_reg <= ram_data;
+                8'h05: begin rd_req <= 1; tx_reg <= 32'h05; end
+                default: tx_reg <= 32'hAABBCCDD;
             endcase
-        end else
-            tx_strb <= 1'b0;
+            rx_byte_cnt <= 0;
+            
+        end
 
+    end else begin
+        tx_strb <= 1'b0;
+        rd_req <= 0;
+        wr_req <= 0;
+    end
 endmodule

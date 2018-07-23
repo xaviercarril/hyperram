@@ -2,45 +2,50 @@
 import serial
 import csv
 import struct
+import time
 
 ser=serial.Serial()
-ser.port="/dev/ttyUSB2"
+ser.port="/dev/ttyUSB1"
 ser.baudrate=115200
 ser.timeout=1
 ser.open()
 
-STEP = 0
-LED = 1
-READ_REQ = 2
-ADDR = 3
-DATA = 4
-WRITE_1 = 5
-WRITE_0 = 6
+cmds = { 
+    'ADDR' : 1 ,
+    'LOAD' : 2,
+    'WRITE' : 3,
+    'READ' : 4,
+    'READ_REQ' : 5,
+    }
 
-def step():
-    # take a step
-    ser.write(struct.pack('B', STEP ));
-    data = ser.read(1)
+def cmd(cmd, data=0):
+    # don't know why but pyserial won't read 6 bytes after doing the writes. Have to interleave
+    ser.write(struct.pack('B', cmds[cmd] ))
+    d = ""
+    d += ser.read(1)
+    ser.write(struct.pack('B', 0))
+    d += ser.read(1)
+    ser.write(struct.pack('B', 0))
+    d += ser.read(1)
+    ser.write(struct.pack('B', 0))
+    d += ser.read(1)
+    ser.write(struct.pack('B', data))
+    d += ser.read(1)
+    # final byte to register the instruction
+    ser.write(struct.pack('B', 0 ))
+    d += ser.read(1)
 
-def write():
-    ser.write(struct.pack('B', WRITE_1 ));
-    ser.write(struct.pack('B', WRITE_0 ));
-
-def read(reg):
-    print(reg)
-    ser.write(struct.pack('B', reg ));
-    data = ser.read(1) # 1 byte hard coded
-    data, = struct.unpack('B', data)
-    return data
+    data, = struct.unpack('>I', d[0:4])
+    print(cmd,  data )
 
 with open("dumpvar" + '.csv', 'wb') as csvfile:
     wr = csv.writer(csvfile, delimiter=',')
-    for i in range(10):
+    for i in range(8):
         print(i)
-        leds = read(LED)
-        addr = read(ADDR)
-        read(READ_REQ)
-        data = read(DATA)
-        #write()
-
-        wr.writerow([i, leds, addr, data])
+        cmd('ADDR', i)
+        cmd('LOAD', 100+i)
+        cmd('WRITE')
+        cmd('READ_REQ')
+        cmd('READ')
+        print("----")
+        #wr.writerow([i, leds, addr, data])

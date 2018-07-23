@@ -25,6 +25,11 @@ sudo-prog: $(PROJ).bin
 	@echo 'Executing prog as root!!!'
 	sudo iceprog $<
 
+debug-serial:
+	iverilog -o test serial_recv_tb.v
+	vvp test -fst
+	gtkwave test.vcd gtk-serial.gtkw
+
 debug-ram:
 	iverilog -o test hyper_xface_tb.v hyper_xface.v
 	vvp test -fst
