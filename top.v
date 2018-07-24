@@ -22,7 +22,7 @@ module top (
 
 );
 
-    reg [1:0] clk_div;
+    reg [3:0] clk_div;
     always @(posedge clk)
         clk_div <= clk_div + 1;
 
@@ -101,6 +101,7 @@ module top (
         end
     end
     */
+
     hyper_xface hyper_xface_0(.reset(reset), .clk(clk),
     // module control
     .rd_req(rd_req),
@@ -125,7 +126,6 @@ module top (
     .dram_ck(dram_ck),
     .dram_rst_l(dram_rst_l),
     .dram_cs_l(dram_cs_l));
-
     //-- Parametro: Velocidad de transmision
     localparam BAUD = `B115200;
 
@@ -163,30 +163,23 @@ module top (
 
     wire tx_strb;
 
-    always @(posedge clk)
-        logic_ce <= (rcv)&&(rxdata == 8'h00);
-
-    /*
-    always @(posedge clk)
-        if (logic_ce)
-        begin
-            leds <= leds + 1;
-        end
-        */
   reg [31:0] ram_data;
 
   reg [39:0] rx_reg = 0;
   reg [31:0] tx_reg = 0;
   reg [2:0] rx_byte_cnt = 0;
 
+/*
   // latch data when it's ready
   always @(posedge rd_rdy)
     ram_data <= rd_d;
+    */
 
   assign leds = addr;
+  reg [31:0] count = 0;
 
   always @(posedge clk)
-    if (rcv) begin
+    if (rcv && ready) begin
         tx_strb <= 1'b1;
         txdata <= tx_reg[31:24]; 
         tx_reg <= tx_reg << 8;
@@ -200,7 +193,9 @@ module top (
                 8'h03: begin wr_req <= 1; tx_reg <= 32'h03; end
                 8'h04: tx_reg <= ram_data;
                 8'h05: begin rd_req <= 1; tx_reg <= 32'h05; end
-                default: tx_reg <= 32'hAABBCCDD;
+                8'h06: begin tx_reg <= count; count <= count + 1; end
+                8'h07: tx_reg <= 32'h01010101;
+                default: tx_reg <= count;
             endcase
             rx_byte_cnt <= 0;
             

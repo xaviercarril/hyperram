@@ -16,6 +16,8 @@ cmds = {
     'WRITE' : 3,
     'READ' : 4,
     'READ_REQ' : 5,
+    'COUNT': 6,
+    'CONST': 7,
     }
 
 def cmd(cmd, data=0):
@@ -35,17 +37,23 @@ def cmd(cmd, data=0):
     ser.write(struct.pack('B', 0 ))
     d += ser.read(1)
 
+    out_str = ""
+    for i in d[0:4]:
+        out_str += str(ord(i)) + ","
+       
     data, = struct.unpack('>I', d[0:4])
-    print(cmd,  data )
+    print(cmd,  out_str, data )
 
 with open("dumpvar" + '.csv', 'wb') as csvfile:
     wr = csv.writer(csvfile, delimiter=',')
-    for i in range(8):
+    for i in range(40):
         print(i)
         cmd('ADDR', i)
-        cmd('LOAD', 100+i)
+        #cmd('LOAD', 100+i)
+        """
         cmd('WRITE')
         cmd('READ_REQ')
         cmd('READ')
+        """
         print("----")
         #wr.writerow([i, leds, addr, data])
