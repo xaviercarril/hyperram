@@ -5,8 +5,11 @@ set_io --warn-no-port leds[1] 98
 set_io --warn-no-port leds[0] 99
 
 set_io --warn-no-port clk 21
-set_io --warn-no-port dram_rwds_oe 44
-set_io --warn-no-port dram_dq_oe  45
+set_io --warn-no-port dram_debug[0] 44
+set_io --warn-no-port dram_debug[1] 45
+set_io --warn-no-port dram_debug[2] 47
+set_io --warn-no-port dram_debug[3] 48
+set_io --warn-no-port dram_debug[4] 56
 
 set_io --warn-no-port rx   9
 set_io --warn-no-port tx   8

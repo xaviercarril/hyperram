@@ -9,12 +9,12 @@ module top (
     output dram_ck,
     output dram_rst_l,
     output dram_cs_l,
-    output dram_rwds_oe,
-    output dram_dq_oe,
 
+    output [4:0] dram_debug,
 
     input rx,
     output tx,
+    output tx2,
 
     // leds
     output [4:0] leds
@@ -22,22 +22,23 @@ module top (
 
 );
 
-    reg [3:0] clk_div;
+ //   assign dram_debug[0] = dram_ck;
+//    assign dram_debug[4:1] = data_pins_out[3:0];
+    assign tx2 = tx;
+    reg [2:0] clk_div;
     always @(posedge clk)
         clk_div <= clk_div + 1;
 
-    wire hram_clk = clk_div[3];
+    wire hram_clk = clk_div[1]; // 12mhz -> 3mhz
     reg reset = 1;
     wire nreset = ~ reset;
 
-    always @(posedge clk)
+    always @(posedge hram_clk)
         reset <= 0;
 
     wire [7:0] data_pins_in;
     wire [7:0] data_pins_out;
     wire dram_dq_oe_l;
-    assign dram_dq_oe = ~dram_dq_oe_l;
-    assign dram_rwds_oe = ~dram_rwds_oe_l;
 
 
     wire rd_rdy;
@@ -101,8 +102,7 @@ module top (
         end
     end
     */
-
-    hyper_xface hyper_xface_0(.reset(reset), .clk(clk),
+    hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
     // module control
     .rd_req(rd_req),
     .wr_req(wr_req),
@@ -119,13 +119,15 @@ module top (
     .latency_2x(latency_2x),
     .mem_or_reg(0),
 
-
     // pins
     .dram_dq_in(data_pins_in), .dram_dq_out(data_pins_out), .dram_dq_oe_l(dram_dq_oe_l),
     .dram_rwds_in(dram_rwds_in), .dram_rwds_out(dram_rwds_out), .dram_rwds_oe_l(dram_rwds_oe_l),
     .dram_ck(dram_ck),
     .dram_rst_l(dram_rst_l),
     .dram_cs_l(dram_cs_l));
+
+    
+
     //-- Parametro: Velocidad de transmision
     localparam BAUD = `B115200;
 
@@ -145,7 +147,7 @@ module top (
     //-- Inicializador
 
     //-- Instanciar la unidad de recepcion
-    uart_rx RX0 (.clk(clk),      //-- Reloj del sistema
+    uart_rx #(.BAUD(BAUD)) RX0 (.clk(hram_clk),      //-- Reloj del sistema
            .rstn(nreset),    //-- Señal de reset
            .rx(rx),        //-- Linea de recepción de datos serie
            .rcv(rcv),      //-- Señal de dato recibido
@@ -153,7 +155,7 @@ module top (
           );
 
     //-- Instanciar la unidad de transmision
-    uart_tx TX0 ( .clk(clk),        //-- Reloj del sistema
+    uart_tx #(.BAUD(BAUD)) TX0 ( .clk(hram_clk),        //-- Reloj del sistema
              .rstn(nreset),     //-- Reset global (activo nivel bajo)
              .start(tx_strb),     //-- Comienzo de transmision
              .data(txdata),     //-- Dato a transmitir
@@ -169,16 +171,22 @@ module top (
   reg [31:0] tx_reg = 0;
   reg [2:0] rx_byte_cnt = 0;
 
-/*
   // latch data when it's ready
   always @(posedge rd_rdy)
     ram_data <= rd_d;
-    */
 
   assign leds = addr;
   reg [31:0] count = 0;
 
-  always @(posedge clk)
+  localparam ADDR = 1;
+  localparam LOAD = 2;
+  localparam WRITE = 3;
+  localparam READ = 4;
+  localparam READ_REQ = 5;
+  localparam COUNT = 6;
+  localparam CONST = 7;
+
+  always @(posedge hram_clk)
     if (rcv && ready) begin
         tx_strb <= 1'b1;
         txdata <= tx_reg[31:24]; 
@@ -188,13 +196,13 @@ module top (
         rx_byte_cnt <= rx_byte_cnt + 1;
         if(rx_byte_cnt == 5) begin
             case(rx_reg[39:32])
-                8'h01: begin addr <= rx_reg[31:0]; tx_reg <= rx_reg[31:0]; end
-                8'h02: begin wr_d <= rx_reg[31:0]; tx_reg <= rx_reg[31:0]; end
-                8'h03: begin wr_req <= 1; tx_reg <= 32'h03; end
-                8'h04: tx_reg <= ram_data;
-                8'h05: begin rd_req <= 1; tx_reg <= 32'h05; end
-                8'h06: begin tx_reg <= count; count <= count + 1; end
-                8'h07: tx_reg <= 32'h01010101;
+                ADDR:  begin addr <= rx_reg[31:0]; tx_reg <= rx_reg[31:0]; end
+                LOAD:  begin wr_d <= rx_reg[31:0]; tx_reg <= rx_reg[31:0]; end
+                WRITE: begin wr_req <= 1; tx_reg <= WRITE; end
+                READ:  tx_reg <= ram_data;
+                READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
+                COUNT: begin tx_reg <= count; count <= count + 1; end
+                CONST: tx_reg <= 32'h01010101;
                 default: tx_reg <= count;
             endcase
             rx_byte_cnt <= 0;

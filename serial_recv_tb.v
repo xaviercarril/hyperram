@@ -1,6 +1,13 @@
 module test;
 
   reg clk = 0;
+  reg [2:0] clk_div = 0;
+  always  @(posedge clk)
+    clk_div <= clk_div + 1;
+  wire slw_clk2 = clk_div[2];
+  wire slw_clk1 = clk_div[1];
+  wire slw_clk0 = clk_div[0];
+
   reg reset = 1;
 
   reg rcv = 0;
@@ -45,7 +52,7 @@ module test;
      reset <= 0;
      # 2
 
-    send_data({8'h01,32'h01});
+    send_data({8'h01,32'hAABBCCDD});
     send_data({8'h02,32'hFF});
     send_data({8'h03,32'hFF});
     send_data({8'h04,32'h00});
@@ -71,7 +78,7 @@ module test;
         if(rx_byte_cnt == 5) begin
             case(cmd_byte)
                 8'h01: addr <= data_bytes;
-                8'h02: wr_d <= data_bytes;
+                8'h02: wr_d <= 32'hAABBCCDD;
                 8'h03: tx_reg <= addr;
                 8'h04: start <= 1;
                 default: tx_reg <= 32'h00;

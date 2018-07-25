@@ -18,14 +18,16 @@
 
 `include "baudgen.vh"
 
-module uart_rx (input wire clk,         //-- Reloj del sistema
+module uart_rx 
+    #(
+    parameter BAUD = `B115200
+    )
+    (input wire clk,         //-- Reloj del sistema
                 input wire rstn,        //-- Reset
                 input wire rx,          //-- Linea de recepcion serie
                 output reg rcv,         //-- Indicar Dato disponible
                 output reg [7:0] data); //-- Dato recibo
 
-//-- Parametro: velocidad de recepcion
-parameter BAUD = `B115200;
 
 //-- Reloj para la recepcion
 wire clk_baud;
