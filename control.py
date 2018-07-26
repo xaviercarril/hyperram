@@ -6,7 +6,7 @@ import time
 
 ser=serial.Serial()
 ser.port="/dev/ttyUSB1"
-ser.baudrate=115200/4  # clock in fpga is divided by 4 to get the ram working
+ser.baudrate=115200
 ser.timeout=1
 ser.open()
 
@@ -22,37 +22,30 @@ cmds = {
 
 # currently only writes 1 byte instead of 4
 def cmd(cmd, data=0):
-    # don't know why but pyserial won't read 6 bytes after doing the writes. Have to interleave
     ser.write(struct.pack('B', cmds[cmd] ))
-    d = ""
-    d += ser.read(1)
-    ser.write(struct.pack('B', 0))
-    d += ser.read(1)
-    ser.write(struct.pack('B', 0))
-    d += ser.read(1)
-    ser.write(struct.pack('B', 0))
-    d += ser.read(1)
-    ser.write(struct.pack('B', data))
-    d += ser.read(1)
+    ser.write(struct.pack('>I', data))
     # final byte to register the instruction
     ser.write(struct.pack('B', 0 ))
-    d += ser.read(1)
+    data = ser.read(5)
+    #print(struct.unpack('BBBBB', data))
+    b, data, = struct.unpack('>BI', data)
+    #print(cmd, data )
+    return data
 
-    out_str = ""
-    for i in d[0:4]:
-        out_str += str(ord(i)) + ","
-       
-    data, = struct.unpack('>I', d[0:4])
-    print(cmd,  out_str, data )
-
+read = False
+write = False
 with open("dumpvar" + '.csv', 'wb') as csvfile:
     wr = csv.writer(csvfile, delimiter=',')
-    for i in range(100, 110):
-        print(i)
-        cmd('ADDR', i)
-        cmd('LOAD', i)
-        cmd('WRITE')
-        cmd('READ_REQ')
-        cmd('READ')
-        print("----")
+    for i in range(0, 2**32,1000000):
+        data = cmd('ADDR', i)
+        if data != i:
+            print("bad")
+            exit(1)
+        if write:
+            cmd('LOAD', i)
+            cmd('WRITE')
+        if read:
+            cmd('READ_REQ')
+            cmd('READ')
+    #    print("----")
         #wr.writerow([i, leds, addr, data])

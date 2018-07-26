@@ -52,7 +52,7 @@ always @(posedge clk)
   rx_r <= rx;
 
 //-- Divisor para la generacion del reloj de llegada de datos 
-baudgen_rx 
+baudgen_rx #(.BAUD(BAUD))
   baudgen0 ( 
     .clk(clk),
     .clk_ena(bauden), 

@@ -101,7 +101,7 @@ always @(posedge clk)
   tx <= shifter[0];
 
 //-- Divisor para obtener el reloj de transmision
-baudgen 
+baudgen #(.BAUD(BAUD))
   BAUD0 (
     .clk(clk),
     .clk_ena(baud_en),
