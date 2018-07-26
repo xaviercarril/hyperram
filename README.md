@@ -5,18 +5,24 @@ This is an open-source RTL project for a simple DWORD burst interface to a Cypre
 
 # ice stick test
 
+For higher speeds, the memory needs latency configuration. This test is at 12Mhz, so the default latencies are plenty and no configuration is performed.
+
 run make prog to synthesise and program onto an attached icestick.
 
 then run ./control.py to test the first 100 addresses
 
-currently fails at address 98 most of the time. 
+## test fails
 
-If only a read is done, the test passes. If a write is done first, the test most often fails.
+* currently fails at address 98 most of the time. 
+* If only a read is done, the test passes. If a write is done first, the test most often fails.
+* The scope shows the data is real, so maybe it's reading from an unwanted address.
+* I can't see the difference between a good read and a bad read.
 
-The scope shows the data is real, so maybe it's reading from an unwanted address.
+# connections
 
-I can't see the difference between a good read and a bad read.
+see icestick.pcf for connections. I'm plugging the adapter into the pmod port and wiring 6 wires from the other side. See [picture](images/icestick.jpg)
 
+no pullups or pulldowns on any lines - just straight through.
 
 # PCB 
 
