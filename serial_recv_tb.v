@@ -93,14 +93,15 @@ module test;
             case(cmd_byte)
                 ADDR:  begin addr <= data_bytes; tx_reg <= data_bytes; end
                 LOAD:  begin wr_d <= data_bytes; tx_reg <= data_bytes; end
-//                WRITE: begin wr_req_ser <= 1; tx_reg <= WRITE; end
-//                READ:  tx_reg <= ram_data;
-//                READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
+                WRITE: begin wr_req_ser <= 1; tx_reg <= WRITE; end
+                READ:  tx_reg <= ram_data;
+                READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
                 COUNT: begin tx_reg <= count; count <= count + 1; end
-//                CONST: tx_reg <= 32'h01010101;
- //               default: tx_reg <= count;
+                CONST: tx_reg <= 32'h01010101;
+                default: tx_reg <= count;
             endcase
             rx_byte_cnt <= 0;
+            // only want 4, but couldn't get it to work, so read an extra in the control program
             tx_bytes <= 5;
         end
     end else begin

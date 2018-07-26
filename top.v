@@ -144,7 +144,6 @@ module top (
     end
     */
 
-/*
     reg mem_or_reg = 0;
     hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
     // module control
@@ -170,7 +169,6 @@ module top (
     .dram_rst_l(dram_rst_l),
     .dram_cs_l(dram_cs_l));
 
-*/
     //-- Parametro: Velocidad de transmision
     localparam BAUD = `B115200;
 
@@ -215,8 +213,9 @@ module top (
   reg [2:0] rx_byte_cnt = 0;
 
   // latch data when it's ready
-  always @(posedge rd_rdy)
-    ram_data <= rd_d;
+  always @(posedge hram_clk)
+    if(rd_rdy)
+        ram_data <= rd_d;
 
   assign leds = addr;
   reg [31:0] count = 0;
@@ -245,15 +244,16 @@ module top (
         if(rx_byte_cnt == 5) begin
             case(cmd_byte)
                 ADDR:  begin addr_ser <= data_bytes; tx_reg <= data_bytes; end
-//                LOAD:  begin wr_d_ser <= data_bytes; tx_reg <= data_bytes; end
-//                WRITE: begin wr_req_ser <= 1; tx_reg <= WRITE; end
-//                READ:  tx_reg <= ram_data;
-//                READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
- //               COUNT: begin tx_reg <= count; count <= count + 1; end
+                LOAD:  begin wr_d_ser <= data_bytes; tx_reg <= data_bytes; end
+                WRITE: begin wr_req_ser <= 1; tx_reg <= WRITE; end
+                READ:  tx_reg <= ram_data;
+                READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
+                COUNT: begin tx_reg <= count; count <= count + 1; end
                 CONST: tx_reg <= 32'd259;
- //               default: tx_reg <= count;
+                default: tx_reg <= count;
             endcase
             rx_byte_cnt <= 0;
+            // only want 4, but couldn't get it to work, so read an extra in the control program
             tx_bytes <= 5;
         end
     end else begin

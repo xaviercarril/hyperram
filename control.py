@@ -29,23 +29,26 @@ def cmd(cmd, data=0):
     data = ser.read(5)
     #print(struct.unpack('BBBBB', data))
     b, data, = struct.unpack('>BI', data)
-    #print(cmd, data )
+    print(cmd, data )
     return data
 
-read = False
-write = False
+read = True
+write = True
 with open("dumpvar" + '.csv', 'wb') as csvfile:
     wr = csv.writer(csvfile, delimiter=',')
-    for i in range(0, 2**32,1000000):
+    for i in range(0, 2**32, 123456):
+        #print(bin(i))
         data = cmd('ADDR', i)
-        if data != i:
-            print("bad")
-            exit(1)
         if write:
             cmd('LOAD', i)
             cmd('WRITE')
         if read:
             cmd('READ_REQ')
-            cmd('READ')
-    #    print("----")
+            read_data = cmd('READ')
+        if(read_data == i):
+            print("pass")
+        else:
+            print("failed at addr %d, was %d" % (i, read_data))
+
+        print("----")
         #wr.writerow([i, leds, addr, data])
