@@ -28,27 +28,37 @@ def cmd(cmd, data=0):
     # couldn't get 4 bytes to work - so reading 5!
     data = ser.read(5)
     b, data, = struct.unpack('>BI', data)
-    print(cmd, data )
+#    print(cmd, data )
     return data
 
 write = True
 read = True
-with open("dumpvar" + '.csv', 'wb') as csvfile:
-    wr = csv.writer(csvfile, delimiter=',')
-    for i in range(100): # currently works up to 98
-        data = cmd('ADDR', i)
-        if write:
-            cmd('LOAD', i)
-            cmd('WRITE')
-        if read:
-            cmd('READ_REQ')
-            read_data = cmd('READ')
+tests = 0
+try:
+    with open("dumpvar" + '.csv', 'wb') as csvfile:
+        wr = csv.writer(csvfile, delimiter=',')
+        for i in range(0, 2000000, 1000):
+            tests += 1
+            if tests % 100 == 0:
+                print(tests, i)
 
-        if read and write:
-            if(read_data == i):
-                print("pass")
-            else:
-                print("failed at addr %d, was %d" % (i, read_data))
+            data = cmd('ADDR', i)
+            if write:
+                cmd('LOAD', i)
+                cmd('WRITE')
+            if read:
+                cmd('READ_REQ')
+                read_data = cmd('READ')
 
-        print("----")
-        #wr.writerow([i, leds, addr, data])
+            if read and write:
+                if(read_data == i):
+                    pass
+                    #print("pass")
+                else:
+                    print("failed at addr %d, was %d" % (i, read_data))
+
+    #        print("----")
+            #wr.writerow([i, leds, addr, data])
+except KeyboardInterrupt as e:
+    print("quitting")
+    print(i)

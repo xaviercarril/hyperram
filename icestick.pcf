@@ -23,7 +23,7 @@ set_io --warn-no-port dram_dq[5] 116
 set_io --warn-no-port dram_dq[6] 117
 set_io --warn-no-port dram_dq[7] 115
 set_io --warn-no-port dram_rwds 80
-set_io --warn-no-port dram_ck 119
+set_io --warn-no-port dram_ck 112
 set_io --warn-no-port dram_rst_l 81
 set_io --warn-no-port dram_cs_l 91
 

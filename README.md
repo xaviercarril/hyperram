@@ -1,4 +1,5 @@
 # hyperram
+
 Portable Verilog RTL interface to S27KL0641DABHI020 64Mbit HyperRAM IC
 
 This is an open-source RTL project for a simple DWORD burst interface to a Cypress [S27KL0641DABHI020 64Mbit HyperRAM](http://www.cypress.com/part/s27kl0641dabhi020).
@@ -9,14 +10,13 @@ For higher speeds, the memory needs latency configuration. This test is at 12Mhz
 
 run make prog to synthesise and program onto an attached icestick.
 
-then run ./control.py to test the first 100 addresses
+then run ./control.py to test the ram
 
-## test fails
+## test results
 
-* currently fails at address 98 most of the time. 
-* If only a read is done, the test passes. If a write is done first, the test most often fails.
-* The scope shows the data is real, so maybe it's reading from an unwanted address.
-* I can't see the difference between a good read and a bad read.
+* tested every address up to 100000, then every 100 up to full size of 2000000
+
+Initial tests failed because wires between hyperram module and icestick were [too long](https://twitter.com/bml_khubbard/status/1022484444068757505).
 
 # connections
 
