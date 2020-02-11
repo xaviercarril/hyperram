@@ -46,8 +46,6 @@ ser.port="/dev/ttyACM0"
 
 * tested every address up to 100000, then every 100 up to full size of 2000000
 
-Initial tests failed because wires between hyperram module and icestick were [too long](https://twitter.com/bml_khubbard/status/1022484444068757505).
-
 # connections
 
 I used a 1bitsquared HyperRAM pmod adapter. It shall be connected to MX2 (Side
