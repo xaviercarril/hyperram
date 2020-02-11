@@ -25,8 +25,7 @@ prog: top.bin
 debug-ram:
 	iverilog -o test tb/hyper_xface_tb.v rtl/hyper_xface.v
 	vvp test -fst
-	gtkwave test.vcd
-
+	gtkwave test.vcd tb/gtk.gtkw
 clean:
 	$(RM) -f top.json top.txt top.ex top.bin *.csv test.vcd test top.rpt
 
