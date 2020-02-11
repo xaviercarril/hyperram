@@ -9,16 +9,11 @@ module top (
     output dram_ck,
     output dram_rst_l,
     output dram_cs_l,
-
-    output [4:0] dram_debug,
-
+    // Serial
     input rx,
     output tx,
-
     // leds
     output [4:0] leds
-
-
 );
 //Since our board has a 25Mhz on board clock I will start by getting a 12Mhz
 //clock to match the original IceStick clock

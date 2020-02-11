@@ -1,2 +1,9 @@
 *.csv
 *.swp
+top.json
+top.txt 
+top.ex 
+top.bin 
+*.csv 
+test.vcd 
+test top.rpt

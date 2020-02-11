@@ -55,6 +55,9 @@ closest to R4 and R9).
 
 no pullups or pulldowns on any lines - just straight through.
 
+Note that even at 12Mhz you can have problems of signal integrity if you add a
+mixmod tester adaptor, so it is not recommended.
+
 # PCB 
 
 Also included is a dual-PMOD PCB adapter design.
