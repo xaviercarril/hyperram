@@ -41,6 +41,9 @@ You may need to change the serial port in the script.
 ```
 ser.port="/dev/ttyACM0"
 ```
+# clock modification
+
+If you want to edit the frequency Clock, first you have to edit the baudgen.vh in order to specify the baudrate speed.
 
 ## test results
 

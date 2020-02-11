@@ -31,13 +31,14 @@ def cmd(cmd, data=0):
 #    print(cmd, data )
     return data
 
+#memory size: 8388608B (8MB) = 2097152 words 
 write = True
 read = True
 tests = 0
 try:
     with open("dumpvar" + '.csv', 'wb') as csvfile:
         wr = csv.writer(csvfile, delimiter=',')
-        for i in range(0, 2000000, 1000):
+        for i in range(0, 2097151 ,1000):
             tests += 1
             if tests % 100 == 0:
                 print(tests, i)
@@ -59,6 +60,7 @@ try:
 
     #        print("----")
             #wr.writerow([i, leds, addr, data])
+            wr.writerow([i, data])
 except KeyboardInterrupt as e:
     print("quitting")
     print(i)

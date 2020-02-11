@@ -16,7 +16,7 @@ module top (
     output tx,
 
     // leds
-    output [4:0] leds
+    //output [4:0] leds
 
 
 );
@@ -45,7 +45,7 @@ SB_PLL40_CORE #(
         clk_12M_div <= clk_12M_div + 1;
     end
 
-    wire hram_clk = clk_12M_div;
+    wire hram_clk = clk_24M_pll;
     reg reset = 1;
     wire nreset = ~ reset;
 
@@ -71,7 +71,7 @@ SB_PLL40_CORE #(
     reg [5:0] rd_num_dwords = 6'h1;     // read 1 4 byte word
 
     reg [7:0] latency_1x = 8'h12;       // latency setup - not so important for 12mhz clock
-    reg [7:0] latency_2x = 8'h16;
+    reg [7:0] latency_2x = 8'h20;
 
     // latch data when it's ready
     reg [31:0] ram_data;
@@ -158,7 +158,7 @@ SB_PLL40_CORE #(
            );
 
   // debug output on leds
-  assign leds = addr;
+  //assign leds = addr;
 
   // state machine states
   localparam ADDR = 8'h1;
@@ -179,7 +179,7 @@ SB_PLL40_CORE #(
 
   // need a delay between starting serial and it toggling the busy pin
   reg last_ready = 0;
-  always @(posedge clk_12M_div)
+  always @(posedge hram_clk)
     last_ready <= ready;
 
   // serial interface
@@ -224,5 +224,9 @@ SB_PLL40_CORE #(
         tx_strb <= 1'b0;
 
   end
+
+  //osciloscope debug
+  assign dram_debug[0] = busy;
+  assign dram_debug[4] = clk_24M_pll;
             
 endmodule

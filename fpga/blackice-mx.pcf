@@ -9,17 +9,17 @@ set_io clk 60
 #set_io PMOD[2] 32 # P12, 24b
 #set_io PMOD[3] 31 # P13, 24a
 #set_io PMOD[4] 34 # P10, 25b
-set_io --warn-no-port dram_debug[0] 38
-set_io --warn-no-port dram_debug[1] 37
-set_io --warn-no-port dram_debug[2] 32
-set_io --warn-no-port dram_debug[3] 31
-set_io --warn-no-port dram_debug[4] 34
+set_io --warn-no-port dram_debug[0] 34
+set_io --warn-no-port dram_debug[1] 38
+set_io --warn-no-port dram_debug[2] 33
+set_io --warn-no-port dram_debug[3] 37
+set_io --warn-no-port dram_debug[4] 29
 
 #This are PMOD pins, not enogh leds
 #set_io PMOD[5] 33 # P11, 25a
 #set_io PMOD[6] 29 # P14, 23b
-set_io leds[3] 33 # B91 L3 Yellow led
-set_io leds[4] 29 # B94 cs Red led
+#set_io leds[3] 33 # B91 L3 Yellow led
+#set_io leds[4] 29 # B94 cs Red led
 #set_io PMOD[7] 28 # P15, 23a
 
 #pmod 3
