@@ -11,6 +11,6 @@
 
 //`define B115200 868 //100MHz
 //`define B115200 104 //12MHz
-`define B115200 208 //12MHz
+`define B115200 208 //24MHz
 `define BTEST 4
 
