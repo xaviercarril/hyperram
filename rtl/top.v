@@ -67,7 +67,7 @@ SB_PLL40_CORE #(
     reg [5:0] rd_num_dwords = 6'h1;     // read 1 4 byte word
 
     reg [7:0] latency_1x = 8'h12;       // latency setup - not so important for 12mhz clock
-    reg [7:0] latency_2x = 8'h20;
+    reg [7:0] latency_2x = 8'h16;
 
     // latch data when it's ready
     reg [31:0] ram_data;
