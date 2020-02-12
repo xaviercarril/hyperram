@@ -12,8 +12,9 @@ module top (
     // Serial
     input wire rx,
     output wire tx,
-    // leds
-    //output [4:0] leds
+	//debug
+  	output wire [4:0] dram_debug
+
 );
 //Since our board has a 25Mhz on board clock I will start by getting a 12Mhz
 //clock to match the original IceStick clock
@@ -157,9 +158,6 @@ SB_PLL40_CORE #(
              .tx(tx),
              .ready(ready)
            );
-
-  // debug output on leds
-  //assign leds = addr;
 
   // state machine states
   localparam ADDR = 8'h1;
