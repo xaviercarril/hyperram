@@ -2,23 +2,18 @@
 `include "baudgen.vh"
 
 module top (
-    input  clk,
+    input wire clk,
     // dram pins
-    inout [7:0] dram_dq,
-    inout dram_rwds,
-    output dram_ck,
-    output dram_rst_l,
-    output dram_cs_l,
-
-    output [4:0] dram_debug,
-
-    input rx,
-    output tx,
-
+    inout wire [7:0] dram_dq,
+    inout wire dram_rwds,
+    output wire dram_ck,
+    output wire dram_rst_l,
+    output wire dram_cs_l,
+    // Serial
+    input wire rx,
+    output wire tx,
     // leds
     //output [4:0] leds
-
-
 );
 //Since our board has a 25Mhz on board clock I will start by getting a 12Mhz
 //clock to match the original IceStick clock
@@ -82,11 +77,14 @@ SB_PLL40_CORE #(
     // setup inout lines for data and rwds pins
     SB_IO #(
         .PIN_TYPE(6'b 1010_01),
+        .PULLUP(1'b 0),
+        .NEG_TRIGGER(1'b 0),
+        .IO_STANDARD("SB_LVCMOS")
     ) hyperram_data_pins [7:0] (
         .PACKAGE_PIN(dram_dq),
         .OUTPUT_ENABLE(~dram_dq_oe_l),
         .D_OUT_0(data_pins_out),
-        .D_IN_0(data_pins_in),
+        .D_IN_0(data_pins_in)
     );
 
     wire dram_rwds_out;
@@ -95,11 +93,14 @@ SB_PLL40_CORE #(
 
     SB_IO #(
         .PIN_TYPE(6'b 1010_01),
+        .PULLUP(1'b 0),
+        .NEG_TRIGGER(1'b 0),
+        .IO_STANDARD("SB_LVCMOS")
     ) hyperram_rwds (
         .PACKAGE_PIN(dram_rwds),
         .OUTPUT_ENABLE(~dram_rwds_oe_l),
         .D_OUT_0(dram_rwds_out),
-        .D_IN_0(dram_rwds_in),
+        .D_IN_0(dram_rwds_in)
     );
 
     // instantiate
@@ -130,9 +131,9 @@ SB_PLL40_CORE #(
     localparam BAUD = `B115200;
 
     wire rcv;
-    wire tx_strb;
-    wire [7:0] rxdata;
-    wire [7:0] txdata;
+    reg tx_strb;
+    wire [7:0] rx_data;
+    reg [7:0] tx_data;
     wire ready;
     wire logic_ce;
 
@@ -146,13 +147,13 @@ SB_PLL40_CORE #(
            .rstn(nreset),
            .rx(rx),
            .rcv(rcv),
-           .data(rxdata)
+           .data(rx_data)
           );
 
     uart_tx #(.BAUD(BAUD)) TX0 ( .clk(hram_clk),
              .rstn(nreset),
              .start(tx_strb),
-             .data(txdata),
+             .data(tx_data),
              .tx(tx),
              .ready(ready)
            );
@@ -187,7 +188,7 @@ SB_PLL40_CORE #(
   // first byte is a command (see above), second 4 make up an unsigned integer
   always @(posedge hram_clk) begin
     if (rcv) begin
-        rx_reg <= {rx_reg[31:0], rxdata};
+        rx_reg <= {rx_reg[31:0], rx_data};
         rx_byte_cnt <= rx_byte_cnt + 1;
         if(rx_byte_cnt == 5) begin
             case(cmd_byte)
@@ -214,7 +215,7 @@ SB_PLL40_CORE #(
     if (tx_bytes > 0 )begin
         if(ready) begin
             tx_strb <= 1'b1;
-            txdata <= tx_reg[31:24]; 
+            tx_data <= tx_reg[31:24]; 
         // tx_uart takes 2 clock cycles for ready to go low after starting, so have to only do this on transition
         end else if (~ready && last_ready) begin
             tx_reg <= tx_reg << 8;

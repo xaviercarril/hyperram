@@ -9,13 +9,14 @@ set_io clk 60
 #set_io PMOD[2] 32 # P12, 24b
 #set_io PMOD[3] 31 # P13, 24a
 #set_io PMOD[4] 34 # P10, 25b
+
 set_io --warn-no-port dram_debug[0] 34
 set_io --warn-no-port dram_debug[1] 38
 set_io --warn-no-port dram_debug[2] 33
 set_io --warn-no-port dram_debug[3] 37
 set_io --warn-no-port dram_debug[4] 29
 
-#This are PMOD pins, not enogh leds
+#This are PMOD pins, not enough leds
 #set_io PMOD[5] 33 # P11, 25a
 #set_io PMOD[6] 29 # P14, 23b
 #set_io leds[3] 33 # B91 L3 Yellow led
@@ -81,7 +82,7 @@ set_io --warn-no-port dram_dq[0] 3
 #set_io PMOD[36] 104 # P53, SDCLK
 #set_io PMOD[37] 102 # P52, SDCMD
 ##set_io PMOD[38] 49 # P49, L0, S2, Blue Led
-set_io -pullup yes RSTN_BUTTON 49 # B81/GBin5 L0 Blue led / S2 button
+#set_io -pullup yes RSTN_BUTTON 49 # B81/GBin5 L0 Blue led / S2 button
 ##set_io PMOD[39] 52 # p48, L1, S1, Green led
 #set_io -pullup yes BT_S1 52 # p48, L1, S1, Green led
 

@@ -49,14 +49,15 @@ If you want to edit the frequency Clock, first you have to edit the baudgen.vh i
 
 * tested every address up to 100000, then every 100 up to full size of 2000000
 
-Initial tests failed because wires between hyperram module and icestick were [too long](https://twitter.com/bml_khubbard/status/1022484444068757505).
-
 # connections
 
 I used a 1bitsquared HyperRAM pmod adapter. It shall be connected to MX2 (Side
 closest to R4 and R9).
 
 no pullups or pulldowns on any lines - just straight through.
+
+Note that even at 12Mhz you can have problems of signal integrity if you add a
+mixmod tester adaptor, so it is not recommended.
 
 # PCB 
 
