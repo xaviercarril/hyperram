@@ -17,23 +17,29 @@ module top (
 
 );
 
-//Use PLL to go from 25MHz to 96Mhz
-	wire clk_96M_pll;
+//Use PLL to go from 25MHz  to 24Mhz
+wire clk_24M_pll;
 
 	SB_PLL40_CORE #(
 		.FEEDBACK_PATH("SIMPLE"),
 		.DIVR(4'b0001),		// DIVR =  1
 		.DIVF(7'b0111100),	// DIVF = 60
-		.DIVQ(3'b011),		// DIVQ =  3
+		.DIVQ(3'b101),		// DIVQ =  5
 		.FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
 	) uut (
 		//.LOCK(locked),
 		.RESETB(1'b1),
 		.BYPASS(1'b0),
 		.REFERENCECLK(clk),
-		.PLLOUTCORE(clk_96M_pll)
+		.PLLOUTCORE(clk_24M_pll)
 		);
-	wire hram_clk = clk_96M_pll;
+//Now use a 2/ divider to get 12.
+    reg clk_12M_div;
+    always @(posedge clk_24M_pll) begin
+        clk_12M_div <= clk_12M_div + 1;
+    end
+
+    wire hram_clk = clk_12M_div;
     reg reset = 1;
     wire nreset = ~ reset;
 
@@ -59,7 +65,7 @@ module top (
     reg [5:0] rd_num_dwords = 6'h1;     // read 1 4 byte word
 
     reg [7:0] latency_1x = 8'h12;       // latency setup - not so important for 12mhz clock
-    reg [7:0] latency_2x = 8'h20;
+    reg [7:0] latency_2x = 8'h16;
 
     // latch data when it's ready
     reg [31:0] ram_data;
@@ -218,6 +224,6 @@ module top (
 
   //osciloscope debug
   assign dram_debug[0] = busy;
-  assign dram_debug[4] = clk_96M_pll;
+  assign dram_debug[4] = clk_24M_pll;
             
 endmodule

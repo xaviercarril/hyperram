@@ -38,7 +38,7 @@ tests = 0
 try:
     with open("dumpvar" + '.csv', 'wb') as csvfile:
         wr = csv.writer(csvfile, delimiter=',')
-        for i in range(0, 2097151 ,1000):
+        for i in range(0, 2097151 , 1000):
             tests += 1
             if tests % 100 == 0:
                 print(tests, i)
