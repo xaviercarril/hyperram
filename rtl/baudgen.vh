@@ -11,10 +11,10 @@
 
 //`define B115200 104 //12MHz
 //`define B115200 26 //12MHz
-//`define B115200 208 //24MHz
+`define B115200 208 //24MHz
 //`define B115200 416 //48MHz
 //`define B115200 555 //64MHz
-`define B115200 833 //96MHz
+//`define B115200 833 //96MHz
 //`define B115200 842 //97MHz
 //`define B115200 850 //98MHz
 //`define B115200 859 //99MHz

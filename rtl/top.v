@@ -1,8 +1,6 @@
 `default_nettype none
 `include "baudgen.vh"
 
-`define CLK_24 1
-
 module top (
     input wire clk,
     // dram pins
@@ -19,25 +17,15 @@ module top (
 
 );
 
-//Use PLL to go from 25MHz to 96Mhz
+//Use PLL to go from 25MHz to 24Mhz
 	wire clk_pll;
 
 SB_PLL40_CORE #(
-	`ifdef CLK_24
 		.FEEDBACK_PATH("SIMPLE"),
 		.DIVR(4'b0001),		// DIVR =  1
 		.DIVF(7'b0111100),	// DIVF = 60
 		.DIVQ(3'b101),		// DIVQ =  5
 		.FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
-	`endif
-
-	`ifdef CLK_96
-		.FEEDBACK_PATH("SIMPLE"),
-		.DIVR(4'b0001),		// DIVR =  1
-		.DIVF(7'b0111100),	// DIVF = 60
-		.DIVQ(3'b011),		// DIVQ =  3
-		.FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
-	`endif
 	) uut (
 	//	.LOCK(locked),
 		.RESETB(1'b1),
@@ -72,7 +60,7 @@ SB_PLL40_CORE #(
     reg [5:0] rd_num_dwords = 6'h1;     // read 1 4 byte word
 
     reg [7:0] latency_1x = 8'h12;       // latency setup - not so important for 12mhz clock
-    reg [7:0] latency_2x = 8'h22;
+    reg [7:0] latency_2x = 8'h16;
 
     // latch data when it's ready
     reg [31:0] ram_data;
