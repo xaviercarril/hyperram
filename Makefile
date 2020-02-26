@@ -10,13 +10,13 @@ all: top.bin
 top.json: $(SRC)
 	yosys -q -p "synth_ice40 -json top.json" $^ 
 
-top.asc: $(PIN_DEF) top.json
-	nextpnr-ice40 --$(DEVICE) --package tq144:4k --pcf fpga/blackice-mx.pcf  --json top.json --asc top.txt --freq 25
+top.txt: $(PIN_DEF) top.json
+	nextpnr-ice40 --$(DEVICE) --gui --package tq144:4k --pcf $(PIN_DEF)  --json top.json --asc top.txt --freq 100 
 
-top.bin: top.asc
+top.bin: top.txt
 	icepack top.txt top.bin
 
-top.rpt: top.asc
+top.rpt: top.txt
 	icetime -d $(DEVICE) -mtr $@ $<
 
 prog: top.bin

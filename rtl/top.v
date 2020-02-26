@@ -13,27 +13,35 @@ module top (
     input wire rx,
     output wire tx,
 	//debug
-  	output wire [4:0] dram_debug
+  	//output wire [4:0] dram_debug
 
 );
 
 //Use PLL to go from 25MHz to 24Mhz
 	wire clk_pll;
 
+//25MHz to 96MHz
+
+
+
 SB_PLL40_CORE #(
 		.FEEDBACK_PATH("SIMPLE"),
-		.DIVR(4'b0001),		// DIVR =  1
-		.DIVF(7'b0111100),	// DIVF = 60
-		.DIVQ(3'b101),		// DIVQ =  5
-		.FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
+		.DIVR(4'b0000),		// DIVR =  0
+		.DIVF(7'b0011111),	// DIVF = 31
+		.DIVQ(3'b011),		// DIVQ =  3
+		.FILTER_RANGE(3'b010)	// FILTER_RANGE = 2
 	) uut (
-	//	.LOCK(locked),
+		//.LOCK(locked),
 		.RESETB(1'b1),
 		.BYPASS(1'b0),
 		.REFERENCECLK(clk),
 		.PLLOUTCORE(clk_pll)
 		);
 
+/*reg clk_12;
+always @(posedge clk_pll) begin
+	clk_12 <= clk_12 + 1;
+end*/
     wire hram_clk = clk_pll;
     reg reset = 1;
     wire nreset = ~ reset;
@@ -59,8 +67,8 @@ SB_PLL40_CORE #(
     reg [3:0] wr_byte_en = 4'hF;        // write 4 bytes
     reg [5:0] rd_num_dwords = 6'h1;     // read 1 4 byte word
 
-    reg [7:0] latency_1x = 8'h12;       // latency setup - not so important for 12mhz clock
-    reg [7:0] latency_2x = 8'h16;
+    reg [7:0] latency_1x = 8'h10;       // latency setup - not so important latency_1x because is configured to go at latency_2x
+    reg [7:0] latency_2x = 8'd22;		// 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
 
     // latch data when it's ready
     reg [31:0] ram_data;
@@ -218,7 +226,7 @@ SB_PLL40_CORE #(
   end
 
   //osciloscope debug
-  assign dram_debug[0] = busy;
-  assign dram_debug[4] = clk_pll;
+  //assign dram_debug[0] = busy;
+  //assign dram_debug[4] = clk_pll;
             
 endmodule

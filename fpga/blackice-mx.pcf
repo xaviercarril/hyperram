@@ -5,20 +5,20 @@ set_io clk 60
 
 #pmod 1 & 2
 #set_io PMOD[0] 38 # P8, B57
-set_io --warn-no-port dram_debug[1] 38
+#set_io --warn-no-port dram_debug[1] 38
 #set_io PMOD[1] 37 # P9, B56
-set_io --warn-no-port dram_debug[3] 37
+#set_io --warn-no-port dram_debug[3] 37
 #set_io PMOD[2] 32 # P12, 24b
 #set_io PMOD[3] 31 # P13, 24a
 #set_io PMOD[4] 34 # P10, 25b
-set_io --warn-no-port dram_debug[0] 34
+#set_io --warn-no-port dram_debug[0] 34
 
 
 #This are PMOD pins, not enough leds
 #set_io PMOD[5] 33 # P11, 25a
-set_io --warn-no-port dram_debug[2] 33
+#set_io --warn-no-port dram_debug[2] 33
 #set_io PMOD[6] 29 # P14, 23b
-set_io --warn-no-port dram_debug[4] 29
+#set_io --warn-no-port dram_debug[4] 29
 #set_io PMOD[7] 28 # P15, 23a
 
 #pmod 3

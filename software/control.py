@@ -35,32 +35,34 @@ def cmd(cmd, data=0):
 write = True
 read = True
 tests = 0
+num = 10
 try:
     with open("dumpvar" + '.csv', 'wb') as csvfile:
         wr = csv.writer(csvfile, delimiter=',')
-        for i in range(0, 2097151 , 1000):
-            tests += 1
-            if tests % 100 == 0:
-                print(tests, i)
+        for j in range(0, num, 1):
+            for i in range(0, 2097151, 1000):
+                tests += 1
+                if tests % 100 == 0:
+                    print(tests, i, j)
 
-            data = cmd('ADDR', i)
-            if write:
-                cmd('LOAD', i)
-                cmd('WRITE')
-            if read:
-                cmd('READ_REQ')
-                read_data = cmd('READ')
+                data = cmd('ADDR', i)
+                if write:
+                    cmd('LOAD', i)
+                    cmd('WRITE')
+                if read:
+                    cmd('READ_REQ')
+                    read_data = cmd('READ')
 
-            if read and write:
-                if(read_data == i):
-                    pass
-                    #print("pass")
-                else:
-                    print("failed at addr %d, was %d" % (i, read_data))
+                if read and write:
+                    if(read_data == i):
+                        pass
+                        #print("pass")
+                    else:
+                        print("failed at addr %d, was %d at test %d" % (i, read_data, j))
+                #print("----")
+                #wr.writerow([i, leds, addr, data])
+                wr.writerow([i, data])
 
-    #        print("----")
-            #wr.writerow([i, leds, addr, data])
-            wr.writerow([i, data])
 except KeyboardInterrupt as e:
     print("quitting")
     print(i)

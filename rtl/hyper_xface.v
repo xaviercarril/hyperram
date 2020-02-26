@@ -336,7 +336,7 @@ always @ ( posedge clk ) begin : proc_fsm
      rd_dwords_cnt <= rd_num_dwords[5:0];
    end
 
-   if ( ck_phs[0] == 1 ) begin
+   if ( ck_phs[0] == 1 ) begin //for every clk_phs edge (posedge & negedge)
      if ( fsm_addr != 3'd0 ) begin
        dram_dq_oe_l   <= 0; // D[7:0] is Output 
        dram_rwds_oe_l <= 1; // RWDS is Input
@@ -356,10 +356,13 @@ always @ ( posedge clk ) begin : proc_fsm
            end
          end
          if ( rw_bit == 1 ) begin
+		   //Mem Reads
            fsm_wait  <= 6'd63;// This actually ends from RWDS strobing
+           //fsm_wait  <= latency_2x[5:0];// This actually ends from RWDS strobing
            run_rd_jk <= 1;
          end
-       end else begin
+       end 
+	   else begin
          fsm_wait <= 6'd0;
          fsm_data <= 4'd0;
        end
