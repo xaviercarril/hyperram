@@ -17,31 +17,11 @@ module top (
 
 );
 
-//Use PLL to go from 25MHz to 24Mhz
+//Use PLL to go from 25MHz to 100Mhz
 	wire clk_pll;
 
-//25MHz to 96MHz
+	assign clk_pll = clk;
 
-
-
-SB_PLL40_CORE #(
-		.FEEDBACK_PATH("SIMPLE"),
-		.DIVR(4'b0000),		// DIVR =  0
-		.DIVF(7'b0011111),	// DIVF = 31
-		.DIVQ(3'b011),		// DIVQ =  3
-		.FILTER_RANGE(3'b010)	// FILTER_RANGE = 2
-	) uut (
-		//.LOCK(locked),
-		.RESETB(1'b1),
-		.BYPASS(1'b0),
-		.REFERENCECLK(clk),
-		.PLLOUTCORE(clk_pll)
-		);
-
-/*reg clk_12;
-always @(posedge clk_pll) begin
-	clk_12 <= clk_12 + 1;
-end*/
     wire hram_clk = clk_pll;
     reg reset = 1;
     wire nreset = ~ reset;
