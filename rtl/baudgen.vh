@@ -10,7 +10,7 @@
 //-- Valores de los divisores para conseguir estos BAUDIOS:
 
 //`define B115200 104 //12MHz
-`define B115200 208 //24MHz
+//`define B115200 208 //24MHz
 //`define B115200 416 //48MHz
 //`define B115200 555 //64MHz
 //`define B115200 781 //90MHz

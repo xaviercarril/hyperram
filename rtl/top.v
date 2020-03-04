@@ -11,7 +11,7 @@ module top (
     output wire dram_cs_l,
     // Serial
     input wire rx,
-    output wire tx,
+    output wire tx
 	//debug
   	//output wire [4:0] dram_debug
 
