@@ -11,7 +11,7 @@ top.json: $(SRC)
 	yosys -q -p "synth_ice40 -json top.json" $^ 
 
 top.txt: $(PIN_DEF) top.json
-	nextpnr-ice40 --$(DEVICE) --gui --package tq144:4k --pcf $(PIN_DEF)  --json top.json --asc top.txt --freq 100 
+	nextpnr-ice40 --$(DEVICE) --package tq144:4k --pcf $(PIN_DEF)  --json top.json --asc top.txt --freq 85 
 
 top.bin: top.txt
 	icepack top.txt top.bin
