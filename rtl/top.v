@@ -1,6 +1,6 @@
 `default_nettype none
 `include "baudgen.vh"
-
+`define ASIC 0 
 module top (
     input wire clk,
     // dram pins
@@ -17,17 +17,40 @@ module top (
 
 );
 
-//Use PLL to go from 25MHz to 100Mhz
+//Use PLL to go from 25MHz to 85Mhz
 	wire clk_pll;
 
-	assign clk_pll = clk;
+//25MHz to 85MHz
 
-    wire hram_clk = clk_pll;
+//`ifndef ASIC
+SB_PLL40_CORE #(
+		.FEEDBACK_PATH("SIMPLE"),
+		.DIVR(4'b0000),		// DIVR =  0
+		.DIVF(7'b0011010),	// DIVF = 26
+		.DIVQ(3'b011),		// DIVQ =  3
+		.FILTER_RANGE(3'b010)	// FILTER_RANGE = 2
+	) uut (
+		//.LOCK(locked),
+		.RESETB(1'b1),
+		.BYPASS(1'b0),
+		.REFERENCECLK(clk),
+		.PLLOUTCORE(clk_pll)
+		);
+
+//`endif
+
+/*reg clk_12;
+always @(posedge clk_pll) begin
+	clk_12 <= clk_12 + 1;
+end*/
+    wire hram_clk;
+    assign hram_clk = clk_pll;
     reg reset = 1;
-    wire nreset = ~ reset;
+    wire nreset;
+	assign nreset = ~reset;
 
-    always @(posedge hram_clk)
-        reset <= 0;
+    /*always @(posedge hram_clk)
+        reset <= 0;*/
 
     wire [7:0] data_pins_in;
     wire [7:0] data_pins_out;
@@ -38,19 +61,36 @@ module top (
     wire rd_rdy;
     reg rd_req = 0;
     reg wr_req = 0;
-    reg [31:0] addr = 0;
+    reg [31:0] addr = 32'b0;
     reg [31:0] wr_d;
     wire [31:0] rd_d;
     wire busy;
     reg mem_or_reg = 0;
 
-    reg [3:0] wr_byte_en = 4'hF;        // write 4 bytes
-    reg [5:0] rd_num_dwords = 6'h1;     // read 1 4 byte word
+    reg [3:0] wr_byte_en;
+    reg [5:0] rd_num_dwords;
 
-    reg [7:0] latency_1x = 8'h10;       // latency setup - not so important latency_1x because is configured to go at latency_2x
-    reg [7:0] latency_2x = 8'd22;		// 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
+    reg [7:0] latency_1x;
+	reg [7:0] latency_2x;		
+    
+	// initialization
+	always @(posedge hram_clk) begin
+		if (reset == 1) begin
+			//rd_req <= 0;
+			//wr_req <= 0;
+			//addr[31:0] <= 32'b0;
+			mem_or_reg <= 0;
 
-    // latch data when it's ready
+			wr_byte_en <= 4'hF;			// write 4 bytes
+			rd_num_dwords <= 6'h1;		// read 1 4 byte word
+
+			latency_1x[7:0] <= 8'h10;	// latency setup - not so important latency_1x because is configured to go at latency_2x
+			latency_2x[7:0] <= 8'd22;	// 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
+			reset <= 0;
+		end
+	end
+
+	// latch data when it's ready
     reg [31:0] ram_data;
     always @(posedge hram_clk)
       if(rd_rdy)
