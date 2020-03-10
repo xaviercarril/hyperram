@@ -103,9 +103,8 @@ set_io --warn-no-port dram_dq[0] 3
 #set_io leds[3] 56 # B94 cs Red led
 
 #UART
-set_io --warn-no-port rx   61
-set_io --warn-no-port tx   62
-
+#set_io --warn-no-port rx   61
+#set_io --warn-no-port tx   62
 ##### original
 #not enough leds
 #set_io --warn-no-port leds[3] 96

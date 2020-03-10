@@ -1,25 +1,25 @@
 `default_nettype none
 `include "baudgen.vh"
-`define ASIC  
+`define ASIC 
 module top (
     input wire clk,
+/*`ifndef ASIC
+    // Serial
+    input wire rx,
+    output wire tx,
+`endif*/
     // dram pins
     inout wire [7:0] dram_dq,
     inout wire dram_rwds,
     output wire dram_ck,
     output wire dram_rst_l,
     output wire dram_cs_l,
-    // Serial
-    input wire rx,
-    output wire tx
 	//debug
   	//output wire [4:0] dram_debug
-
 );
 
 //Use PLL to go from 25MHz to 85Mhz
 	wire clk_pll;
-
 //25MHz to 85MHz
 
 `ifndef ASIC
@@ -38,6 +38,9 @@ SB_PLL40_CORE #(
 		);
 
 `endif
+`ifdef ASIC
+	assign clk_pll = clk;
+`endif
 
 /*reg clk_12;
 always @(posedge clk_pll) begin
@@ -51,8 +54,6 @@ end*/
 
     /*always @(posedge hram_clk)
         reset <= 0;*/
-
-
 
     // signals for hyper ram
     wire rd_rdy;
@@ -72,19 +73,16 @@ end*/
     
 	// initialization
 	always @(posedge hram_clk) begin
-		if (reset == 1) begin
-			//rd_req <= 0;
-			//wr_req <= 0;
-			//addr[31:0] <= 32'b0;
-			mem_or_reg <= 0;
+	  if (reset == 1) begin
+		mem_or_reg <= 0;
 
-			wr_byte_en <= 4'hF;			// write 4 bytes
-			rd_num_dwords <= 6'h1;		// read 1 4 byte word
+		wr_byte_en <= 4'hF;			// write 4 bytes
+		rd_num_dwords <= 6'h1;		// read 1 4 byte word
 
-			latency_1x[7:0] <= 8'h10;	// latency setup - not so important latency_1x because is configured to go at latency_2x
-			latency_2x[7:0] <= 8'd22;	// 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
-			reset <= 0;
-		end
+		latency_1x[7:0] <= 8'h10;	// latency setup - not so important latency_1x because is configured to go at latency_2x
+		latency_2x[7:0] <= 8'd22;	// 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
+		reset <= 0;
+	  end
 	end
 
 	// latch data when it's ready
@@ -114,12 +112,12 @@ end*/
 `ifdef ASIC
     // setup inout lines for data pins
 	always @(posedge clk) begin
-		if (~dram_dq_oe_l) begin
-			dram_dq <= data_pins_out;
-		end
-		else begin
-			data_pins_in <= dram_dq;
-		end 
+	  if (~dram_dq_oe_l) begin
+		dram_dq[7:0] <= data_pins_out[7:0];
+	  end
+	  else begin
+		data_pins_in[7:0] <= dram_dq[7:0];
+	  end 
 	end	
 `endif
     wire dram_rwds_out;
@@ -143,12 +141,12 @@ end*/
 `ifdef ASIC
     // setup inout lines for rwds pins
 	always @(posedge clk) begin
-		if (~dram_rwds_oe_l) begin
-			dram_rwds <= dram_rwds_out;
-		end
-		else begin
-			dram_rwds_in <= dram_rwds;
-		end
+	  if (~dram_rwds_oe_l) begin
+		dram_rwds <= dram_rwds_out;
+	  end
+	  else begin
+		dram_rwds_in <= dram_rwds;
+	  end
 	end	
 `endif
 // instantiate
@@ -175,6 +173,7 @@ end*/
     .dram_rst_l(dram_rst_l),
     .dram_cs_l(dram_cs_l));
 
+`ifndef ASIC
     // serial port setup
     localparam BAUD = `B115200;
 
@@ -270,7 +269,7 @@ end*/
         tx_strb <= 1'b0;
 
   end
-
+`endif
   //osciloscope debug
   //assign dram_debug[0] = busy;
   //assign dram_debug[4] = clk_pll;

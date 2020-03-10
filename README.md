@@ -4,6 +4,11 @@ Portable Verilog RTL interface to S27KL0641DABHI020 64Mbit HyperRAM IC
 
 This is an open-source RTL project for a simple DWORD burst interface to a Cypress [S27KL0641DABHI020 64Mbit HyperRAM](http://www.cypress.com/part/s27kl0641dabhi020).
 
+#SYNTHESIS
+- Define ASIC on rtl/top.v
+- Comment on Makefile: rtl/baudgen.v rtl/baudgen_rx.v rtl/uart_rx.v rtl/uart_tx.v  
+- Comment on fpga/blackice-mx.pcf, the UART pins
+ 
 # ice stick test
 
 For higher speeds, the memory needs latency configuration. This test is at 12Mhz, so the default latencies are plenty and no configuration is performed.
