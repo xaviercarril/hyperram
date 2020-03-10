@@ -1,6 +1,6 @@
 `default_nettype none
 `include "baudgen.vh"
-`define ASIC 0 
+`define ASIC  
 module top (
     input wire clk,
     // dram pins
@@ -22,7 +22,7 @@ module top (
 
 //25MHz to 85MHz
 
-//`ifndef ASIC
+`ifndef ASIC
 SB_PLL40_CORE #(
 		.FEEDBACK_PATH("SIMPLE"),
 		.DIVR(4'b0000),		// DIVR =  0
@@ -37,7 +37,7 @@ SB_PLL40_CORE #(
 		.PLLOUTCORE(clk_pll)
 		);
 
-//`endif
+`endif
 
 /*reg clk_12;
 always @(posedge clk_pll) begin
@@ -52,9 +52,6 @@ end*/
     /*always @(posedge hram_clk)
         reset <= 0;*/
 
-    wire [7:0] data_pins_in;
-    wire [7:0] data_pins_out;
-    wire dram_dq_oe_l;
 
 
     // signals for hyper ram
@@ -95,8 +92,13 @@ end*/
     always @(posedge hram_clk)
       if(rd_rdy)
         ram_data <= rd_d;
-    
-    // setup inout lines for data and rwds pins
+
+    wire [7:0] data_pins_in;
+    wire [7:0] data_pins_out;
+    wire dram_dq_oe_l;
+
+`ifndef ASIC    
+    // setup inout lines for data pins
     SB_IO #(
         .PIN_TYPE(6'b 1010_01),
         .PULLUP(1'b 0),
@@ -108,11 +110,24 @@ end*/
         .D_OUT_0(data_pins_out),
         .D_IN_0(data_pins_in)
     );
-
+`endif
+`ifdef ASIC
+    // setup inout lines for data pins
+	always @(posedge clk) begin
+		if (~dram_dq_oe_l) begin
+			dram_dq <= data_pins_out;
+		end
+		else begin
+			data_pins_in <= dram_dq;
+		end 
+	end	
+`endif
     wire dram_rwds_out;
     wire dram_rwds_in;
     wire dram_rwds_oe_l;
 
+`ifndef ASIC
+    // setup inout lines for rwds pins
     SB_IO #(
         .PIN_TYPE(6'b 1010_01),
         .PULLUP(1'b 0),
@@ -124,8 +139,19 @@ end*/
         .D_OUT_0(dram_rwds_out),
         .D_IN_0(dram_rwds_in)
     );
-
-    // instantiate
+`endif
+`ifdef ASIC
+    // setup inout lines for rwds pins
+	always @(posedge clk) begin
+		if (~dram_rwds_oe_l) begin
+			dram_rwds <= dram_rwds_out;
+		end
+		else begin
+			dram_rwds_in <= dram_rwds;
+		end
+	end	
+`endif
+// instantiate
     hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
     .rd_req(rd_req),
     .wr_req(wr_req),
