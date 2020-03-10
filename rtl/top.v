@@ -13,9 +13,7 @@ module top (
     inout wire dram_rwds,
     output wire dram_ck,
     output wire dram_rst_l,
-    output wire dram_cs_l,
-	//debug
-  	//output wire [4:0] dram_debug
+    output wire dram_cs_l
 );
 
 //Use PLL to go from 25MHz to 85Mhz
@@ -42,18 +40,11 @@ SB_PLL40_CORE #(
 	assign clk_pll = clk;
 `endif
 
-/*reg clk_12;
-always @(posedge clk_pll) begin
-	clk_12 <= clk_12 + 1;
-end*/
     wire hram_clk;
     assign hram_clk = clk_pll;
     reg reset = 1;
     wire nreset;
 	assign nreset = ~reset;
-
-    /*always @(posedge hram_clk)
-        reset <= 0;*/
 
     // signals for hyper ram
     wire rd_rdy;
@@ -111,7 +102,7 @@ end*/
 `endif
 `ifdef ASIC
     // setup inout lines for data pins
-	always @(posedge clk) begin
+	always @(posedge hram_clk) begin
 	  if (~dram_dq_oe_l) begin
 		dram_dq[7:0] <= data_pins_out[7:0];
 	  end
@@ -140,7 +131,7 @@ end*/
 `endif
 `ifdef ASIC
     // setup inout lines for rwds pins
-	always @(posedge clk) begin
+	always @(posedge hram_clk) begin
 	  if (~dram_rwds_oe_l) begin
 		dram_rwds <= dram_rwds_out;
 	  end
@@ -270,8 +261,5 @@ end*/
 
   end
 `endif
-  //osciloscope debug
-  //assign dram_debug[0] = busy;
-  //assign dram_debug[4] = clk_pll;
             
 endmodule
