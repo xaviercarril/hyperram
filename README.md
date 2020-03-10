@@ -4,7 +4,9 @@ Portable Verilog RTL interface to S27KL0641DABHI020 64Mbit HyperRAM IC
 
 This is an open-source RTL project for a simple DWORD burst interface to a Cypress [S27KL0641DABHI020 64Mbit HyperRAM](http://www.cypress.com/part/s27kl0641dabhi020).
 
-#SYNTHESIS
+# SYNTHESIS
+
+In order to synthesize the maximum frequency as posible:
 - Define ASIC on rtl/top.v
 - Comment on Makefile: rtl/baudgen.v rtl/baudgen_rx.v rtl/uart_rx.v rtl/uart_tx.v  
 - Comment on fpga/blackice-mx.pcf, the UART pins
