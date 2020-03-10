@@ -3,11 +3,11 @@
 `define ASIC 
 module top (
     input wire clk,
-/*`ifndef ASIC
+`ifndef ASIC
     // Serial
     input wire rx,
     output wire tx,
-`endif*/
+`endif
     // dram pins
     inout wire [7:0] dram_dq,
     inout wire dram_rwds,
