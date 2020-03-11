@@ -1,6 +1,10 @@
 `default_nettype none
-`include "baudgen.vh"
 `define ASIC 
+
+`ifndef ASIC
+	`include "baudgen.vh"
+`endif
+
 module top (
     input wire clk,
 `ifndef ASIC
