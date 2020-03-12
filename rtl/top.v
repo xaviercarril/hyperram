@@ -105,13 +105,18 @@ SB_PLL40_CORE #(
     );
 `endif
 `ifdef ASIC
-    // setup inout lines for data pins
+	reg [7:0] dram_dq_r;
+	reg [7:0] data_pins_in_r;
+	assign data_pins_in[7:0] = data_pins_in_r[7:0];
+   	assign dram_dq = dram_dq_r;
+
+	// setup inout lines for data pins
 	always @(posedge hram_clk) begin
 	  if (~dram_dq_oe_l) begin
-		dram_dq[7:0] <= data_pins_out[7:0];
+		dram_dq_r[7:0] <= data_pins_out[7:0];
 	  end
 	  else begin
-		data_pins_in[7:0] <= dram_dq[7:0];
+		data_pins_in_r[7:0] <= dram_dq[7:0];
 	  end 
 	end	
 `endif
@@ -134,13 +139,17 @@ SB_PLL40_CORE #(
     );
 `endif
 `ifdef ASIC
-    // setup inout lines for rwds pins
+	reg dram_rwds_r;
+	reg dram_rwds_in_r;
+	assign dram_rwds_in = dram_rwds_in_r;
+   	assign dram_rwds = dram_rwds_r; 
+	// setup inout lines for rwds pins
 	always @(posedge hram_clk) begin
 	  if (~dram_rwds_oe_l) begin
-		dram_rwds <= dram_rwds_out;
+		dram_rwds_r <= dram_rwds_out;
 	  end
 	  else begin
-		dram_rwds_in <= dram_rwds;
+		dram_rwds_in_r <= dram_rwds;
 	  end
 	end	
 `endif
