@@ -12,6 +12,14 @@ module top (
     input wire rx,
     output wire tx,
 `endif
+`ifdef ASIC
+	input wire hrd_req,
+	input wire hwr_req,
+	input wire [31:0] hwr_d,
+	input wire [31:0] haddr,
+	input wire [7:0] hdata_pins_in,
+	input wire hdram_rwds_in,
+`endif
     // dram pins
     inout wire [7:0] dram_dq,
     inout wire dram_rwds,
@@ -38,7 +46,6 @@ SB_PLL40_CORE #(
 		.REFERENCECLK(clk),
 		.PLLOUTCORE(clk_pll)
 		);
-
 `endif
 `ifdef ASIC
 	assign clk_pll = clk;
@@ -103,23 +110,33 @@ SB_PLL40_CORE #(
         .D_OUT_0(data_pins_out),
         .D_IN_0(data_pins_in)
     );
+`elsif
+	always @(*) begin
+		if (dram_dq_oe_l) begin
+			data_pins_in = dram_dq;	
+		end else begin
+			dram_dq = data_pins_out;	
+		end
+	end
 `endif
-`ifdef ASIC
-	reg [7:0] dram_dq_r;
-	reg [7:0] data_pins_in_r;
-	assign data_pins_in[7:0] = data_pins_in_r[7:0];
-   	assign dram_dq = dram_dq_r;
-
+//`ifdef ASIC
+//	reg [7:0] dram_dq_r;
+//	reg [7:0] data_pins_in_r;
+//	assign data_pins_in[7:0] = data_pins_in_r[7:0];
+//	
+//	always @(*) begin
+//		if ()
+//	end
 	// setup inout lines for data pins
-	always @(posedge hram_clk) begin
-	  if (~dram_dq_oe_l) begin
-		dram_dq_r[7:0] <= data_pins_out[7:0];
-	  end
-	  else begin
-		data_pins_in_r[7:0] <= dram_dq[7:0];
-	  end 
-	end	
-`endif
+//	always @(posedge hram_clk) begin
+//	  if (~dram_dq_oe_l) begin
+//		dram_dq_r[7:0] <= data_pins_out[7:0];
+//	  end
+//	  else begin
+//		data_pins_in_r[7:0] <= dram_dq[7:0];
+//	  end 
+//	end	
+//`endif
     wire dram_rwds_out;
     wire dram_rwds_in;
     wire dram_rwds_oe_l;
@@ -137,9 +154,17 @@ SB_PLL40_CORE #(
         .D_OUT_0(dram_rwds_out),
         .D_IN_0(dram_rwds_in)
     );
-`endif
-`ifdef ASIC
-	reg dram_rwds_r;
+`elsif
+	always @(*) begin
+		if (dram_rwds_oe_l) begin
+			dram_rwds_in = dram_rwds;	
+		end else begin
+			dram_rwds = dram_rwds_out;	
+		end
+	end
+
+
+/*	reg dram_rwds_r;
 	reg dram_rwds_in_r;
 	assign dram_rwds_in = dram_rwds_in_r;
    	assign dram_rwds = dram_rwds_r; 
@@ -151,18 +176,32 @@ SB_PLL40_CORE #(
 	  else begin
 		dram_rwds_in_r <= dram_rwds;
 	  end
-	end	
+	end
+*/
+
 `endif
+
+/*`ifdef ASIC
+	always @(*) begin
+		rd_req = hrd_req;
+		wr_req = hwr_req;
+		wr_d = hwr_d;
+		addr = haddr;
+		dram_dq_in = hdram_dq_in;
+		dram_rwds_in = hdram_rwds_in;
+	end
+`endif*/
+ 
 // instantiate
     hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
-    .rd_req(rd_req),
-    .wr_req(wr_req),
-    .wr_d(wr_d),
+    .rd_req(hrd_req),
+    .wr_req(hwr_req),
+    .wr_d(hwr_d),
     .rd_d(rd_d),
     .rd_rdy(rd_rdy),
     .wr_byte_en(wr_byte_en),
     .rd_num_dwords(rd_num_dwords),
-    .addr(addr),
+    .addr(haddr),
     .busy(busy),
 
 
@@ -171,8 +210,8 @@ SB_PLL40_CORE #(
     .mem_or_reg(mem_or_reg),
 
     // pins
-    .dram_dq_in(data_pins_in), .dram_dq_out(data_pins_out), .dram_dq_oe_l(dram_dq_oe_l),
-    .dram_rwds_in(dram_rwds_in), .dram_rwds_out(dram_rwds_out), .dram_rwds_oe_l(dram_rwds_oe_l),
+    .dram_dq_in(hdata_pins_in), .dram_dq_out(data_pins_out), .dram_dq_oe_l(dram_dq_oe_l),
+    .dram_rwds_in(hdram_rwds_in), .dram_rwds_out(dram_rwds_out), .dram_rwds_oe_l(dram_rwds_oe_l),
     .dram_ck(dram_ck),
     .dram_rst_l(dram_rst_l),
     .dram_cs_l(dram_cs_l));
