@@ -164,34 +164,6 @@ SB_PLL40_CORE #(
 	end
 
 
-/*	reg dram_rwds_r;
-	reg dram_rwds_in_r;
-	assign dram_rwds_in = dram_rwds_in_r;
-   	assign dram_rwds = dram_rwds_r; 
-	// setup inout lines for rwds pins
-	always @(posedge hram_clk) begin
-	  if (~dram_rwds_oe_l) begin
-		dram_rwds_r <= dram_rwds_out;
-	  end
-	  else begin
-		dram_rwds_in_r <= dram_rwds;
-	  end
-	end
-*/
-
-`endif
-
-/*`ifdef ASIC
-	always @(*) begin
-		rd_req = hrd_req;
-		wr_req = hwr_req;
-		wr_d = hwr_d;
-		addr = haddr;
-		dram_dq_in = hdram_dq_in;
-		dram_rwds_in = hdram_rwds_in;
-	end
-`endif*/
- 
 // instantiate
     hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
     .rd_req(hrd_req),
