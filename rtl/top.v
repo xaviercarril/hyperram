@@ -110,7 +110,12 @@ SB_PLL40_CORE #(
         .D_OUT_0(data_pins_out),
         .D_IN_0(data_pins_in)
     );
-`elsif
+`else
+
+	assign data_pins_in[7:0] = dram_dq_oe_l ? dram_dq : 8'bz;
+	assign dram_dq[7:0] = ~dram_dq_oe_l ? data_pins_out : 8'bz;
+
+/*
 	always @(*) begin
 		if (dram_dq_oe_l) begin
 			data_pins_in = dram_dq;	
@@ -118,6 +123,7 @@ SB_PLL40_CORE #(
 			dram_dq = data_pins_out;	
 		end
 	end
+*/
 `endif
 //`ifdef ASIC
 //	reg [7:0] dram_dq_r;
@@ -154,15 +160,20 @@ SB_PLL40_CORE #(
         .D_OUT_0(dram_rwds_out),
         .D_IN_0(dram_rwds_in)
     );
-`elsif
-	always @(*) begin
+`else
+
+	assign dram_rwds = ~dram_rwds_oe_l ? dram_rwds_out : 1'bz;
+	assign dram_rwds_in = dram_rwds_oe_l ? dram_rwds : 1'bz;
+
+/*	always @(*) begin
 		if (dram_rwds_oe_l) begin
 			dram_rwds_in = dram_rwds;	
 		end else begin
 			dram_rwds = dram_rwds_out;	
 		end
 	end
-
+*/
+`endif
 
 // instantiate
     hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
