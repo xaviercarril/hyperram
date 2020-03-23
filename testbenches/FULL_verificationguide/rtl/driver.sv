@@ -37,7 +37,7 @@ class driver;
   
   //drivers the transaction items to interface signals
   task drive;
-			wait(!`DRIV_IF.busy);
+	  //wait(!(`DRIV_IF.busy));
       transaction trans;
       `DRIV_IF.wr_en <= 0;
       `DRIV_IF.rd_en <= 0;
@@ -56,7 +56,7 @@ class driver;
         @(posedge mem_vif.DRIVER.clk);
         `DRIV_IF.rd_en <= 0;
         @(posedge mem_vif.DRIVER.clk);
-				wait(`DRIV_IF.rd_rdy);
+		wait(`DRIV_IF.rd_rdy);
         trans.rdata = `DRIV_IF.rdata;
         $display("\tADDR = %0h \tRDATA = %0h",trans.addr,`DRIV_IF.rdata);
       end

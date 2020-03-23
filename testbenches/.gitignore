@@ -3,3 +3,6 @@
 transcript
 *.mti
 work/
+lib_module/
+Makefile
+*.ini
