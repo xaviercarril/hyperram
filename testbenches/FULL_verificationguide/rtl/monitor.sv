@@ -3,6 +3,8 @@
 //-------------------------------------------------------------------------
 //Samples the interface signals, captures into transaction packet and send the packet to scoreboard.
 
+import env::transaction;
+
 `define MON_IF mem_vif.MONITOR.monitor_cb
 class monitor;
   

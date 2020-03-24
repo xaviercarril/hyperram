@@ -1,7 +1,7 @@
 //-------------------------------------------------------------------------
 //						www.verificationguide.com
 //-------------------------------------------------------------------------
-interface mem_intf(input logic clk,reset);
+interface mem_intf(input logic clk, input logic reset);
  
   	//declaring the signals
   	logic [31:0] addr;

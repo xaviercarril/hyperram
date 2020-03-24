@@ -1,6 +1,8 @@
 //-------------------------------------------------------------------------
 //						www.verificationguide.com
 //-------------------------------------------------------------------------
+package env;
+
 `include "transaction.sv"
 `include "generator.sv"
 `include "driver.sv"
@@ -70,4 +72,4 @@ class environment;
   
 endclass
 
-
+endpackage : env

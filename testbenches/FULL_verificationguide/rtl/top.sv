@@ -1,5 +1,5 @@
-`include "s27ks0641.sv"
-`include "hyper_xface.sv"
+`include "s27ks0641.v"
+`include "hyper_xface.v"
 
 
 //top, this is the top most file, in which DUT(Design Under Test) and Verification environment are connected. 

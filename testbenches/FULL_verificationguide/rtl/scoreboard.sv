@@ -3,6 +3,8 @@
 //-------------------------------------------------------------------------
 //gets the packet from monitor, Generated the expected result and compares with the //actual result recived from Monitor
 
+import env::transaction;
+
 class scoreboard;
    
   //creating mailbox handle

@@ -1,6 +1,8 @@
 //-------------------------------------------------------------------------
 //						www.verificationguide.com
 //-------------------------------------------------------------------------
+import env::transaction;
+
 class generator;
   
   //declaring transaction class 
