@@ -3,8 +3,6 @@
 //-------------------------------------------------------------------------
 //gets the packet from generator and drive the transaction paket items into interface (interface is connected to DUT, so the items driven into interface signal will get driven in to DUT) 
 
-import env::transaction;
-
 `define DRIV_IF mem_vif.DRIVER.driver_cb
 class driver;
   
@@ -28,9 +26,10 @@ class driver;
   //Reset task, Reset the Interface signals to default/initial values
   task reset;
     wait(mem_vif.reset);
+	no_transactions = 1;
     $display("--------- [DRIVER] Reset Started ---------");
-    `DRIV_IF.wr_en <= 0;
-    `DRIV_IF.rd_en <= 0;
+    `DRIV_IF.wr_req <= 0;
+    `DRIV_IF.rd_req <= 0;
     `DRIV_IF.addr  <= 0;
     `DRIV_IF.wdata <= 0;        
     wait(!mem_vif.reset);
@@ -39,24 +38,24 @@ class driver;
   
   //drivers the transaction items to interface signals
   task drive;
-	  //wait(!(`DRIV_IF.busy));
-      transaction trans;
-      `DRIV_IF.wr_en <= 0;
-      `DRIV_IF.rd_en <= 0;
+      transaction_pkg::transaction trans;
+      `DRIV_IF.wr_req <= 0;
+      `DRIV_IF.rd_req <= 0;
       gen2driv.get(trans);
+	  wait(`DRIV_IF.rd_rdy);
       $display("--------- [DRIVER-TRANSFER: %0d] ---------",no_transactions);
       @(posedge mem_vif.DRIVER.clk);
         `DRIV_IF.addr <= trans.addr;
-      if(trans.wr_en) begin
-        `DRIV_IF.wr_en <= trans.wr_en;
+      if(trans.wr_req) begin
+        `DRIV_IF.wr_req <= trans.wr_req;
         `DRIV_IF.wdata <= trans.wdata;
         $display("\tADDR = %0h \tWDATA = %0h",trans.addr,trans.wdata);
         @(posedge mem_vif.DRIVER.clk);
       end
-      if(trans.rd_en) begin
-        `DRIV_IF.rd_en <= trans.rd_en;
+      if(trans.rd_req) begin
+        `DRIV_IF.rd_req <= trans.rd_req;
         @(posedge mem_vif.DRIVER.clk);
-        `DRIV_IF.rd_en <= 0;
+        `DRIV_IF.rd_req <= 0;
         @(posedge mem_vif.DRIVER.clk);
 		wait(`DRIV_IF.rd_rdy);
         trans.rdata = `DRIV_IF.rdata;

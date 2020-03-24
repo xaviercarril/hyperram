@@ -3,8 +3,6 @@
 //-------------------------------------------------------------------------
 //gets the packet from monitor, Generated the expected result and compares with the //actual result recived from Monitor
 
-import env::transaction;
-
 class scoreboard;
    
   //creating mailbox handle
@@ -14,7 +12,7 @@ class scoreboard;
   int no_transactions;
   
   //array to use as local memory
-  bit [7:0] mem[4];
+  bit [31:0] mem[4];
   
   //constructor
   function new(mailbox mon2scb);
@@ -29,13 +27,13 @@ class scoreboard;
     forever begin
       #50;
       mon2scb.get(trans);
-      if(trans.rd_en) begin
+      if(trans.rd_req) begin
         if(mem[trans.addr] != trans.rdata) 
           $error("[SCB-FAIL] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr],trans.rdata);
         else 
           $display("[SCB-PASS] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr],trans.rdata);
       end
-      else if(trans.wr_en)
+      else if(trans.wr_req)
         mem[trans.addr] = trans.wdata;
 
       no_transactions++;

@@ -3,8 +3,6 @@
 //-------------------------------------------------------------------------
 //Samples the interface signals, captures into transaction packet and send the packet to scoreboard.
 
-import env::transaction;
-
 `define MON_IF mem_vif.MONITOR.monitor_cb
 class monitor;
   
@@ -29,14 +27,15 @@ class monitor;
       trans = new();
 
       @(posedge mem_vif.MONITOR.clk);
-      wait(`MON_IF.rd_en || `MON_IF.wr_en);
+      wait(`MON_IF.rd_req || `MON_IF.wr_req);
         trans.addr  = `MON_IF.addr;
-        trans.wr_en = `MON_IF.wr_en;
+        trans.wr_req = `MON_IF.wr_req;
         trans.wdata = `MON_IF.wdata;
-        if(`MON_IF.rd_en) begin
-          trans.rd_en = `MON_IF.rd_en;
+        if(`MON_IF.rd_req) begin
+          trans.rd_req = `MON_IF.rd_req;
           @(posedge mem_vif.MONITOR.clk);
           @(posedge mem_vif.MONITOR.clk);
+		  wait(`MON_IF.rd_rdy);
           trans.rdata = `MON_IF.rdata;
         end      
         mon2scb.put(trans);

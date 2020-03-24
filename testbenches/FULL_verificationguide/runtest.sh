@@ -7,15 +7,15 @@ rm -rf lib_module
 
 vlib lib_module
 vmap work $PWD/lib_module
-vlog +acc=rn +incdir+ $RTL/environment.sv $RTL/transaction.sv $RTL/driver.sv $RTL/generator.sv $RTL/top.sv  $RTL/random_test.sv $RTL/interface.sv $RTL/s27ks0641.v $RTL/hyper_xface.v $RTL/monitor.sv $RTL/scoreboard.sv
+vlog +acc=rn +incdir+. $RTL/top.sv 
 vmake lib_module/ > Makefile
 
 #vsim work.tb_icache_interface -do  "view wave -new" -do "do wave.do" -do "run 20"
 
 if [ -z "$1" ]
 then
-      #vsim work.tb_icache_interface -do "view wave -new" -do "do wave.do" -do "run $CYCLES"
+      vsim work.top work.hyper_xface -do "view wave -new" -do "do wave.do" -do "run $CYCLES"
 else
-      #vsim work.tb_icache_interface $1 -do "run $CYCLES"
+      vsim work.top $1 -do "run $CYCLES"
 fi
 

@@ -1,13 +1,14 @@
 //-------------------------------------------------------------------------
 //						www.verificationguide.com
 //-------------------------------------------------------------------------
-package env;
-
 `include "transaction.sv"
+import transaction_pkg::*;
+
 `include "generator.sv"
 `include "driver.sv"
 `include "monitor.sv"
 `include "scoreboard.sv"
+
 class environment;
   
   //generator and driver instance
@@ -72,4 +73,3 @@ class environment;
   
 endclass
 
-endpackage : env

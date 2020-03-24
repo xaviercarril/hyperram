@@ -39,35 +39,6 @@ mem_intf intf(clk,reset);
 //Testcase instance, interface handle is passed to test as an argument
 test t1(intf);
 
-/*reg rd_req, wr_req;
-wire busy;
-
-always_ff @(posedge clk) begin
-	if (!busy) begin
-		if (intf.wr_en) begin
-			rd_req <= 0;
-			wr_req <= 1;
-		else if (intf.rd_en) begin
-			rd_req <= 1;
-			wr_req <= 0;
-		else begin
-			rd_req <= 0;
-			wr_req <= 0;
-		end
-			
-	end
-	else begin
-		rd_req <= 0;
-		wr_req <= 0;
-	end
-end
-
-wire [31:0] rd_d;
-wire rd_rdy;
-always_ff @(posedge clk) begin
-	if (rd_rdy) intf.rdata <= rd_d;
-end
-*/
 reg mem_or_reg;
 reg [3:0] wr_byte_en;
 reg [5:0] rd_num_dwords;
@@ -95,11 +66,11 @@ assign dram_rwds = ~dram_rwds_oe_l ? dram_rwds_out : 1'bz;
 assign dram_rwds_in = dram_rwds_oe_l ? dram_rwds : 1'bz;
 
 
-hyper_xfce controller_ip(
+hyper_xface controller_ip(
 .clk				(intf.clk),
-.rd_req				(intf.rd_en),
-.wr_req				(intf.wr_en),
-.mem_or_req			(mem_or_reg),
+.rd_req				(intf.rd_req),
+.wr_req				(intf.wr_req),
+.mem_or_reg			(mem_or_reg),
 .wr_byte_en			(wr_byte_en),
 .rd_num_dwords		(rd_num_dwords),
 .addr				(intf.addr),

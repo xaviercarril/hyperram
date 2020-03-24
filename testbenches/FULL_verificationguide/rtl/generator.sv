@@ -1,8 +1,6 @@
 //-------------------------------------------------------------------------
 //						www.verificationguide.com
 //-------------------------------------------------------------------------
-import env::transaction;
-
 class generator;
   
   //declaring transaction class 
@@ -28,7 +26,8 @@ class generator;
   //main task, generates(create and randomizes) the repeat_count number of transaction packets and puts into mailbox
   task main();
     repeat(repeat_count) begin
-    if( !trans.randomize() ) $fatal("Gen:: trans randomization failed");      
+    if( !trans.randomize() ) $fatal("Gen:: trans randomization failed");
+	trans.post_randomize();      
     tr = trans.do_copy();
     gen2driv.put(tr);
     end

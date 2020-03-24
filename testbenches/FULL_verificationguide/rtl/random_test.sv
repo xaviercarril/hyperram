@@ -1,7 +1,8 @@
 //-------------------------------------------------------------------------
 //						www.verificationguide.com
 //-------------------------------------------------------------------------
-import env::environment 
+
+ 
 `include "environment.sv"
 program test(interface intf);
   

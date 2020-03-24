@@ -90,7 +90,7 @@
 --   Configd 3 Clock  83 MHz Latency, latency1x=0x04, latency2x=0x0a
 --     CfgReg0 write(0x00000800, 0x8fe40000);
 -- ***************************************************************************/
-`default_nettype none // Strictly enforce all nets to be declared
+//`default_nettype none // Strictly enforce all nets to be declared
 module hyper_xface 
 (
   input  wire         reset,

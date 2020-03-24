@@ -6,3 +6,5 @@ work/
 lib_module/
 Makefile
 *.ini
+*.vcd
+*.wlf
