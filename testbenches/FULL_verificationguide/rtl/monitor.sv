@@ -31,6 +31,7 @@ class monitor;
         trans.addr  = `MON_IF.addr;
         trans.wr_req = `MON_IF.wr_req;
         trans.wdata = `MON_IF.wdata;
+		trans.wr_byte_en = `MON_IF.wr_byte_en;
         if(`MON_IF.rd_req) begin
           trans.rd_req = `MON_IF.rd_req;
           @(posedge mem_vif.MONITOR.clk);

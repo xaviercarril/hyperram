@@ -7,10 +7,11 @@ interface mem_intf(input logic clk, input logic reset);
   	logic [31:0] addr;
   	logic wr_req;
   	logic rd_req;
-  	logic [7:0] wdata;
-  	logic [7:0] rdata;
+  	logic [31:0] wdata;
+  	logic [31:0] rdata;
 	logic busy;
 	logic rd_rdy;
+	logic [3:0] wr_byte_en;
   
 	//driver clocking block
 	clocking driver_cb @(posedge clk);
@@ -19,9 +20,10 @@ interface mem_intf(input logic clk, input logic reset);
     	output	wr_req;
 	    output	rd_req;
 	    output	wdata;
+		output	wr_byte_en;
 	    input 	rdata;
 		input 	busy;
-		input 	rd_rdy;  
+		input 	rd_rdy;
 	endclocking
   
 	//monitor clocking block
@@ -31,6 +33,7 @@ interface mem_intf(input logic clk, input logic reset);
 	    input	wr_req;
 	    input	rd_req;
 	    input	wdata;
+		input	wr_byte_en;
 	    input	rdata;
 		input	busy;
 		input	rd_rdy;

@@ -31,7 +31,8 @@ class driver;
     `DRIV_IF.wr_req <= 0;
     `DRIV_IF.rd_req <= 0;
     `DRIV_IF.addr  <= 0;
-    `DRIV_IF.wdata <= 0;        
+    `DRIV_IF.wdata <= 0;
+	`DRIV_IF.wr_byte_en <= 0;        
     wait(!mem_vif.reset);
     $display("--------- [DRIVER] Reset Ended ---------");
   endtask
@@ -42,14 +43,16 @@ class driver;
       `DRIV_IF.wr_req <= 0;
       `DRIV_IF.rd_req <= 0;
       gen2driv.get(trans);
-	  wait(`DRIV_IF.rd_rdy);
+      @(posedge mem_vif.DRIVER.clk);
+	  wait(!(`DRIV_IF.busy));
       $display("--------- [DRIVER-TRANSFER: %0d] ---------",no_transactions);
       @(posedge mem_vif.DRIVER.clk);
         `DRIV_IF.addr <= trans.addr;
       if(trans.wr_req) begin
         `DRIV_IF.wr_req <= trans.wr_req;
         `DRIV_IF.wdata <= trans.wdata;
-        $display("\tADDR = %0h \tWDATA = %0h",trans.addr,trans.wdata);
+		`DRIV_IF.wr_byte_en <= trans.wr_byte_en;
+        $display("\tADDR = 0x%0h \tWDATA = 0x%0h \twr_byte_en = 0x%0h",trans.addr,trans.wdata,trans.wr_byte_en);
         @(posedge mem_vif.DRIVER.clk);
       end
       if(trans.rd_req) begin
@@ -59,7 +62,7 @@ class driver;
         @(posedge mem_vif.DRIVER.clk);
 		wait(`DRIV_IF.rd_rdy);
         trans.rdata = `DRIV_IF.rdata;
-        $display("\tADDR = %0h \tRDATA = %0h",trans.addr,`DRIV_IF.rdata);
+        $display("\tADDR = 0x%0h \tRDATA = 0x%0h",trans.addr,`DRIV_IF.rdata);
       end
       $display("-----------------------------------------");
       no_transactions++;

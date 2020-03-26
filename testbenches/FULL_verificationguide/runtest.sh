@@ -14,8 +14,8 @@ vmake lib_module/ > Makefile
 
 if [ -z "$1" ]
 then
-      vsim work.top work.hyper_xface -do "view wave -new" -do "do wave.do" -do "run $CYCLES"
+      vsim work.top -do "do wave.do" -do "run $CYCLES"  #-do "view wave -new" 
 else
-      vsim work.top $1 -do "run $CYCLES"
+      vsim work.top $1 -do "run $CYCLES" -t ns
 fi
 

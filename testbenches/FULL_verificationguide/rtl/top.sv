@@ -1,3 +1,5 @@
+`timescale 1ns/1ns
+
 `include "s27ks0641.v"
 `include "hyper_xface.v"
 
@@ -10,8 +12,8 @@
 
 //-------------------------[NOTE]---------------------------------
 //Particular testcase can be run by uncommenting, and commenting the rest
-`include "random_test.sv"
-//`include "wr_rd_test.sv"
+//`include "random_test.sv"
+`include "wr_rd_test.sv"
 //`include "default_rd_test.sv"
 //----------------------------------------------------------------
 
@@ -25,7 +27,7 @@ module top();
 initial begin
   clk = 0;
 end	
-always #5 clk = ~clk;
+always #1 clk = ~clk;  //150MHz
 
 //reset generation
 initial begin
@@ -40,14 +42,14 @@ mem_intf intf(clk,reset);
 test t1(intf);
 
 reg mem_or_reg;
-reg [3:0] wr_byte_en;
+//reg [3:0] wr_byte_en;
 reg [5:0] rd_num_dwords;
 reg [7:0] latency_1x, latency_2x; 
 wire burst_wr_rdy; //Not connected
 initial begin
 	mem_or_reg = 0;
 
-    wr_byte_en = 4'hF;         // write 4 bytes
+    //wr_byte_en = 4'hF;         // write 4 bytes
     rd_num_dwords = 6'h1;      // read 1 4 byte word
 
     latency_1x[7:0] = 8'h10;   // latency setup - not so important latency_1x because is configured to go at latency_2x
@@ -67,11 +69,12 @@ assign dram_rwds_in = dram_rwds_oe_l ? dram_rwds : 1'bz;
 
 
 hyper_xface controller_ip(
+.reset				(reset),
 .clk				(intf.clk),
 .rd_req				(intf.rd_req),
 .wr_req				(intf.wr_req),
 .mem_or_reg			(mem_or_reg),
-.wr_byte_en			(wr_byte_en),
+.wr_byte_en			(intf.wr_byte_en),
 .rd_num_dwords		(rd_num_dwords),
 .addr				(intf.addr),
 .wr_d				(intf.wdata),
@@ -79,6 +82,8 @@ hyper_xface controller_ip(
 .rd_rdy				(intf.rd_rdy),
 .busy				(intf.busy),
 .burst_wr_rdy		(burst_wr_rdy),
+.latency_1x			(latency_1x),
+.latency_2x			(latency_2x),
 
 .dram_dq_in			(data_pins_in),
 .dram_dq_out		(data_pins_out),

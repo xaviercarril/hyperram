@@ -27,7 +27,6 @@ class generator;
   task main();
     repeat(repeat_count) begin
     if( !trans.randomize() ) $fatal("Gen:: trans randomization failed");
-	trans.post_randomize();      
     tr = trans.do_copy();
     gen2driv.put(tr);
     end
