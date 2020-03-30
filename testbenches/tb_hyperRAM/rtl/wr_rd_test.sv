@@ -1,7 +1,13 @@
 `include "environment.sv"
+
+/*---------------------[TYPE OF ACCESS]------------------------------*/
+//Uncomment one and comment the rest
+
 //`define 4BYTE
 //`define 2BYTE
 `define 1BYTE
+
+/*-------------------------------------------------------------------*/
 program test(mem_intf intf);
 
 	class my_trans extends transaction;
