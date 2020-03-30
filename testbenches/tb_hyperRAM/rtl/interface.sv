@@ -1,6 +1,3 @@
-//-------------------------------------------------------------------------
-//						www.verificationguide.com
-//-------------------------------------------------------------------------
 interface mem_intf(input logic clk, input logic reset);
  
   	//declaring the signals

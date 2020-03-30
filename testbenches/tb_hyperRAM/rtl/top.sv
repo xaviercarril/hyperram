@@ -1,6 +1,8 @@
-`include "s27ks0641.sv"
-`include "hyper_xface.sv"
 
+`include "s27ks0641.v"
+`include "hyper_xface.v"
+
+`timescale 1 ns/1 ps
 
 //top, this is the top most file, in which DUT(Design Under Test) and Verification environment are connected. 
 //-------------------------------------------------------------------------
@@ -10,77 +12,49 @@
 
 //-------------------------[NOTE]---------------------------------
 //Particular testcase can be run by uncommenting, and commenting the rest
-`include "random_test.sv"
-//`include "wr_rd_test.sv"
+//`include "random_test.sv"
+`include "wr_rd_test.sv"
 //`include "default_rd_test.sv"
 //----------------------------------------------------------------
 
 module top();
 
 //clock and reset signal declaration
-  bit clk;
-  bit reset;
+	bit clk;
+	bit reset;
 
 //clock generation
 initial begin
-  clk = 0;
+  	clk = 0;
 end	
-always #5 clk = ~clk;
+always #6.7 clk = ~clk;  //150MHz
 
-//reset generation
+//power-up generation
 initial begin
 	reset = 1;
-	#5 reset = 0;
+	#150e3 reset = 0; //150us : tVCS
 end
-  
+ 
+
 //creatinng instance of interface, inorder to connect DUT and testcase
 mem_intf intf(clk,reset);
   
 //Testcase instance, interface handle is passed to test as an argument
 test t1(intf);
 
-/*reg rd_req, wr_req;
-wire busy;
-
-always_ff @(posedge clk) begin
-	if (!busy) begin
-		if (intf.wr_en) begin
-			rd_req <= 0;
-			wr_req <= 1;
-		else if (intf.rd_en) begin
-			rd_req <= 1;
-			wr_req <= 0;
-		else begin
-			rd_req <= 0;
-			wr_req <= 0;
-		end
-			
-	end
-	else begin
-		rd_req <= 0;
-		wr_req <= 0;
-	end
-end
-
-wire [31:0] rd_d;
-wire rd_rdy;
-always_ff @(posedge clk) begin
-	if (rd_rdy) intf.rdata <= rd_d;
-end
-*/
 reg mem_or_reg;
-reg [3:0] wr_byte_en;
+//reg [3:0] wr_byte_en;
 reg [5:0] rd_num_dwords;
 reg [7:0] latency_1x, latency_2x; 
 wire burst_wr_rdy; //Not connected
 initial begin
 	mem_or_reg = 0;
 
-    wr_byte_en = 4'hF;         // write 4 bytes
+    //wr_byte_en = 4'hF;         // write 4 bytes
     rd_num_dwords = 6'h1;      // read 1 4 byte word
 
     latency_1x[7:0] = 8'h10;   // latency setup - not so important latency_1x because is configured to go at latency_2x
-    latency_2x[7:0] = 8'd22;   // 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
+    latency_2x[7:0] = 8'd21;   // 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
 end
 
 wire [7:0] data_pins_in, data_pins_out, dram_dq;
@@ -95,12 +69,13 @@ assign dram_rwds = ~dram_rwds_oe_l ? dram_rwds_out : 1'bz;
 assign dram_rwds_in = dram_rwds_oe_l ? dram_rwds : 1'bz;
 
 
-hyper_xfce controller_ip(
+hyper_xface controller_ip(
+.reset				(reset),
 .clk				(intf.clk),
-.rd_req				(intf.rd_en),
-.wr_req				(intf.wr_en),
-.mem_or_req			(mem_or_reg),
-.wr_byte_en			(wr_byte_en),
+.rd_req				(intf.rd_req),
+.wr_req				(intf.wr_req),
+.mem_or_reg			(mem_or_reg),
+.wr_byte_en			(intf.wr_byte_en),
 .rd_num_dwords		(rd_num_dwords),
 .addr				(intf.addr),
 .wr_d				(intf.wdata),
@@ -108,6 +83,8 @@ hyper_xfce controller_ip(
 .rd_rdy				(intf.rd_rdy),
 .busy				(intf.busy),
 .burst_wr_rdy		(burst_wr_rdy),
+.latency_1x			(latency_1x),
+.latency_2x			(latency_2x),
 
 .dram_dq_in			(data_pins_in),
 .dram_dq_out		(data_pins_out),
@@ -122,7 +99,8 @@ hyper_xfce controller_ip(
 
 
 
-s27ks0641 hyperRAM(
+s27ks0641 #(.TimingModel("S27KS0641DPBHI020"))
+hyperRAM(
 .DQ7      (dram_dq[7]),
 .DQ6      (dram_dq[6]),
 .DQ5      (dram_dq[5]),
@@ -137,6 +115,7 @@ s27ks0641 hyperRAM(
 .CKNeg    (~dram_ck),
 .RESETNeg (dram_rst_l)
 );
+
 
 //enabling the wave dump
   initial begin 

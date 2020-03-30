@@ -1,17 +1,22 @@
-//-------------------------------------------------------------------------
-//						www.verificationguide.com
-//-------------------------------------------------------------------------
 `include "transaction.sv"
+import transaction_pkg::*;
+
 `include "generator.sv"
 `include "driver.sv"
+`include "monitor.sv"
+`include "scoreboard.sv"
+
 class environment;
   
   //generator and driver instance
-  generator gen;
-  driver    driv;
+  generator  gen;
+  driver     driv;
+  monitor    mon;
+  scoreboard scb;
   
   //mailbox handle's
   mailbox gen2driv;
+  mailbox mon2scb;
   
   //event for synchronization between generator and test
   event gen_ended;
@@ -26,10 +31,13 @@ class environment;
     
     //creating the mailbox (Same handle will be shared across generator and driver)
     gen2driv = new();
+    mon2scb  = new();
     
     //creating generator and driver
     gen  = new(gen2driv,gen_ended);
     driv = new(mem_vif,gen2driv);
+    mon  = new(mem_vif,mon2scb);
+    scb  = new(mon2scb);
   endfunction
   
   //
@@ -41,12 +49,15 @@ class environment;
     fork 
     gen.main();
     driv.main();
+    mon.main();
+    scb.main();      
     join_any
   endtask
   
   task post_test();
     wait(gen_ended.triggered);
     wait(gen.repeat_count == driv.no_transactions);
+    wait(gen.repeat_count == scb.no_transactions);
   endtask  
   
   //run task
@@ -58,5 +69,4 @@ class environment;
   endtask
   
 endclass
-
 

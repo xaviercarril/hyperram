@@ -128,6 +128,7 @@ module hyper_xface
   reg  [31:0]  data_sr;
   reg  [31:0]  rd_sr;
   reg  [1:0]   ck_phs;
+  reg  [5:0]   fsm_reset;
   reg  [2:0]   fsm_addr;
   reg  [3:0]   fsm_data;
   reg  [5:0]   fsm_wait;
@@ -259,7 +260,7 @@ always @ ( posedge clk ) begin : proc_lb_regs
  begin
    rd_d       <= 32'd0;
    rd_rdy     <= 0;
-   go_bit     <= 0;
+   //go_bit     <= 0;
    busy       <= run_jk | go_bit;
 
    if ( addr_shift == 1 ) begin
@@ -320,7 +321,8 @@ end // proc_lb_regs
 
 
 //-----------------------------------------------------------------------------
-// 3 State Machines:
+// 4 State Machines:
+//	fsm_reset: Counts the Reset Cycles (tRH)
 //  fsm_addr : Counts the Address Cycles
 //  fsm_wait : Counts the Latency Cycles
 //  fsm_data : Counts the Data Cycles
@@ -335,6 +337,9 @@ always @ ( posedge clk ) begin : proc_fsm
      rd_dwords_cnt <= rd_num_dwords[5:0];
    end
 
+   if (fsm_reset != 3'd0) begin
+	 fsm_reset <= fsm_reset - 1;
+   end
    if ( ck_phs[0] == 1 ) begin //for every clk_phs edge (posedge & negedge)
      if ( fsm_addr != 3'd0 ) begin
        dram_dq_oe_l   <= 0; // D[7:0] is Output 
@@ -416,11 +421,12 @@ always @ ( posedge clk ) begin : proc_fsm
      end 
    end 
 
-   if ( go_bit == 1 ) begin
-     fsm_addr       <= 3'd6;
+   if ( go_bit == 1 && fsm_reset == 3'd0) begin
+     fsm_addr       <= 3'd7;
      fsm_wait       <= 6'd0;
      fsm_data       <= 4'd0;
      run_jk         <= 1;
+	 go_bit			<= 0;
      dram_dq_oe_l   <= 1; // Default Input
      dram_rwds_oe_l <= 1; // Default Input
    end
@@ -435,6 +441,7 @@ always @ ( posedge clk ) begin : proc_fsm
    end 
 
    if ( reset == 1 ) begin 
+	 fsm_reset	<= 6'd30;
      fsm_addr   <= 3'd0;
      fsm_data   <= 4'd0;
      fsm_wait   <= 6'd0;

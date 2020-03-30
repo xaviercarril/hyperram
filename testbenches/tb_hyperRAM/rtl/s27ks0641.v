@@ -105,8 +105,13 @@ module s27ks0641
                     DQ0 };
     wire RWDSin;
     assign RWDSin = RWDS_ipd;
-
-    //  internal delays
+	
+//	Load SDF File
+	initial begin 
+		$sdf_annotate("./rtl/s27ks0641.sdf");
+	end
+    
+//  internal delays
     reg DPD_in           = 0;
     reg DPD_out          = 0;
     reg RPH_in           = 0;

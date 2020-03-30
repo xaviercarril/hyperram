@@ -1,5 +1,5 @@
 $1
-CYCLES=80
+CYCLES=200000000
 BASE_DIR="."
 RTL="${BASE_DIR}/rtl"
 
@@ -14,8 +14,8 @@ vmake lib_module/ > Makefile
 
 if [ -z "$1" ]
 then
-      vsim work.top -do "do wave.do" -do "run $CYCLES"  #-do "view wave -new" 
+      vsim work.top -do "do wave.do" -do "run $CYCLES"  #-t ns #-do "view wave -new"  
 else
-      vsim work.top $1 -do "run $CYCLES" -t ns
+      vsim work.top $1 -do "run $CYCLES" #-t ns
 fi
 

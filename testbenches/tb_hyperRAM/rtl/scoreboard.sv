@@ -1,6 +1,3 @@
-//-------------------------------------------------------------------------
-//						www.verificationguide.com
-//-------------------------------------------------------------------------
 //gets the packet from monitor, Generated the expected result and compares with the //actual result recived from Monitor
 
 class scoreboard;
@@ -12,7 +9,7 @@ class scoreboard;
   int no_transactions;
   
   //array to use as local memory
-  bit [31:0] mem[4];
+  bit [31:0] mem[bit[31:0]];
   
   //constructor
   function new(mailbox mon2scb);

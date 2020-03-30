@@ -44,6 +44,7 @@ add wave -noupdate -group controller /top/controller_ip/addr_sr
 add wave -noupdate -group controller /top/controller_ip/data_sr
 add wave -noupdate -group controller /top/controller_ip/rd_sr
 add wave -noupdate -group controller -radix binary /top/controller_ip/ck_phs
+add wave -noupdate -group controller /top/controller_ip/fsm_reset
 add wave -noupdate -group controller /top/controller_ip/fsm_addr
 add wave -noupdate -group controller /top/controller_ip/fsm_data
 add wave -noupdate -group controller /top/controller_ip/fsm_wait
@@ -115,14 +116,21 @@ add wave -noupdate -group HyperRAM /top/hyperRAM/RWDS
 add wave -noupdate -group HyperRAM /top/hyperRAM/CSNeg
 add wave -noupdate -group HyperRAM /top/hyperRAM/CK
 add wave -noupdate -group HyperRAM /top/hyperRAM/CKNeg
+add wave -noupdate -group HyperRAM /top/hyperRAM/CKDiff
+add wave -noupdate -group HyperRAM /top/hyperRAM/rising_edge_CKDiff
+add wave -noupdate -group HyperRAM /top/hyperRAM/PoweredUp
 add wave -noupdate -group HyperRAM /top/hyperRAM/RESETNeg
-add wave -noupdate -group HyperRAM /top/hyperRAM/CSNeg_ipd
-add wave -noupdate -group HyperRAM /top/hyperRAM/CK_ipd
-add wave -noupdate -group HyperRAM /top/hyperRAM/CKNeg_ipd
-add wave -noupdate -group HyperRAM /top/hyperRAM/RESETNeg_ipd
 add wave -noupdate -group HyperRAM /top/hyperRAM/Din
 add wave -noupdate -group HyperRAM /top/hyperRAM/Dout
+add wave -noupdate -group HyperRAM /top/hyperRAM/Address
+add wave -noupdate -group HyperRAM -radix symbolic /top/hyperRAM/ca_cnt
+add wave -noupdate -group HyperRAM /top/hyperRAM/ca_in
 add wave -noupdate -group HyperRAM /top/hyperRAM/RWDSin
+add wave -noupdate -group HyperRAM /top/hyperRAM/Data_in
+add wave -noupdate -group HyperRAM /top/hyperRAM/UByteMask
+add wave -noupdate -group HyperRAM /top/hyperRAM/LByteMask
+add wave -noupdate -group HyperRAM /top/hyperRAM/Target
+add wave -noupdate -group HyperRAM /top/hyperRAM/data_cycle
 add wave -noupdate -group HyperRAM /top/hyperRAM/DQt_01
 add wave -noupdate -group HyperRAM /top/hyperRAM/RWDSt_01
 add wave -noupdate -group HyperRAM /top/hyperRAM/RWDSRt_01
@@ -150,7 +158,6 @@ add wave -noupdate -group HyperRAM /top/hyperRAM/Dout_zd_latchL
 add wave -noupdate -group HyperRAM /top/hyperRAM/RWDS_zd_latchH
 add wave -noupdate -group HyperRAM /top/hyperRAM/RWDS_zd_latchL
 add wave -noupdate -group HyperRAM /top/hyperRAM/RESETNeg_pullup
-add wave -noupdate -group HyperRAM /top/hyperRAM/CKDiff
 add wave -noupdate -group HyperRAM /top/hyperRAM/RW
 add wave -noupdate -group HyperRAM /top/hyperRAM/REFCOLL
 add wave -noupdate -group HyperRAM /top/hyperRAM/REFCOLL_ACTIV
@@ -159,7 +166,7 @@ add wave -noupdate -group HyperRAM /top/hyperRAM/Dout_Z
 add wave -noupdate -group HyperRAM /top/hyperRAM/RWDSout_Z
 add wave -noupdate -group HyperRAM /top/hyperRAM/tRWR_CHK
 add wave -noupdate -group HyperRAM /top/hyperRAM/bus_cycle_state
-add wave -noupdate -group HyperRAM /top/hyperRAM/Data_in
+add wave -noupdate -group HyperRAM /top/hyperRAM/current_state
 add wave -noupdate -group HyperRAM /top/hyperRAM/RD_WRAP
 add wave -noupdate -group HyperRAM /top/hyperRAM/Start_BurstAddr
 add wave -noupdate -group HyperRAM /top/hyperRAM/RdWrStart
@@ -172,7 +179,7 @@ add wave -noupdate -group HyperRAM /top/hyperRAM/BuffOutRWDS
 add wave -noupdate -group HyperRAM /top/hyperRAM/BuffInRWDSR
 add wave -noupdate -group HyperRAM /top/hyperRAM/BuffOutRWDSR
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {149 ps} 0}
+WaveRestoreCursors {{Cursor 1} {153561110 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 220
 configure wave -valuecolwidth 100
@@ -186,6 +193,6 @@ configure wave -gridoffset 0
 configure wave -gridperiod 1000
 configure wave -griddelta 40
 configure wave -timeline 0
-configure wave -timelineunits ps
+configure wave -timelineunits ns
 update
-WaveRestoreZoom {111 ps} {179 ps}
+WaveRestoreZoom {153391058 ps} {154440384 ps}
