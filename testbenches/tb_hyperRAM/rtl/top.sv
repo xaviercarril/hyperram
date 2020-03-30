@@ -12,9 +12,7 @@
 
 //-------------------------[NOTE]---------------------------------
 //Particular testcase can be run by uncommenting, and commenting the rest
-//`include "random_test.sv"
 `include "wr_rd_test.sv"
-//`include "default_rd_test.sv"
 //----------------------------------------------------------------
 
 module top();

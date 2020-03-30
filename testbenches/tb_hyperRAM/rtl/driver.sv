@@ -49,7 +49,7 @@ class driver;
         `DRIV_IF.wr_req <= trans.wr_req;
         `DRIV_IF.wdata <= trans.wdata;
 		`DRIV_IF.wr_byte_en <= trans.wr_byte_en;
-        $display("\tADDR = 0x%0h \tWDATA = 0x%0h \twr_byte_en = 0x%0h",trans.addr,trans.wdata,trans.wr_byte_en);
+        $display("\tADDR = 0x%0h \tWDATA = 0x%0h \twr_byte_en = %0b", trans.addr, trans.wdata, trans.wr_byte_en);
         @(posedge mem_vif.DRIVER.clk);
       end
       if(trans.rd_req) begin
@@ -60,7 +60,7 @@ class driver;
 		wait(`DRIV_IF.rd_rdy);
         trans.rdata = `DRIV_IF.rdata;
 		`DRIV_IF.wr_byte_en <= trans.wr_byte_en; //Only to know how bytes to read on the scoreboard
-        $display("\tADDR = 0x%0h \tRDATA = 0x%0h",trans.addr,`DRIV_IF.rdata);
+        $display("\tADDR = 0x%0h \tRDATA = 0x%0h \twr_byte_en = %0b", trans.addr, `DRIV_IF.rdata, trans.wr_byte_en);
       end
       $display("-----------------------------------------");
       no_transactions++;

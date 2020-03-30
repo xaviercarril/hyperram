@@ -65,6 +65,7 @@ class environment;
     pre_test();
     test();
     post_test();
+	$display("[PASS] = %0d \t [FAIL] = %0d \t [TOTAL] = %0d",scb.num_pass, scb.num_fail, scb.num_pass+scb.num_fail);
     $finish;
   endtask
   
