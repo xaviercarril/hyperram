@@ -43,14 +43,12 @@ mem_intf intf(clk,reset);
 test t1(intf);
 
 reg mem_or_reg;
-//reg [3:0] wr_byte_en;
 reg [5:0] rd_num_dwords;
 reg [7:0] latency_1x, latency_2x; 
 wire burst_wr_rdy; //Not connected
 initial begin
 	mem_or_reg = 0;
 
-    //wr_byte_en = 4'hF;         // write 4 bytes
     rd_num_dwords = 6'h1;      // read 1 4 byte word
 
     latency_1x[7:0] = 8'h10;   // latency setup - not so important latency_1x because is configured to go at latency_2x

@@ -51,7 +51,7 @@ class environment;
     driv.main();
     mon.main();
     scb.main();      
-    join_any
+	join_any
   endtask
   
   task post_test();

@@ -59,6 +59,7 @@ class driver;
         @(posedge mem_vif.DRIVER.clk);
 		wait(`DRIV_IF.rd_rdy);
         trans.rdata = `DRIV_IF.rdata;
+		`DRIV_IF.wr_byte_en <= trans.wr_byte_en; //Only to know how bytes to read on the scoreboard
         $display("\tADDR = 0x%0h \tRDATA = 0x%0h",trans.addr,`DRIV_IF.rdata);
       end
       $display("-----------------------------------------");

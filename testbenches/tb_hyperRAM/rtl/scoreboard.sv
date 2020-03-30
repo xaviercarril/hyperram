@@ -22,19 +22,38 @@ class scoreboard;
   task main;
     transaction trans;
     forever begin
-      #50;
-      mon2scb.get(trans);
-      if(trans.rd_req) begin
-        if(mem[trans.addr] != trans.rdata) 
-          $error("[SCB-FAIL] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr],trans.rdata);
-        else 
-          $display("[SCB-PASS] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr],trans.rdata);
-      end
-      else if(trans.wr_req)
-        mem[trans.addr] = trans.wdata;
-
-      no_transactions++;
-    end
+		#50;
+		mon2scb.get(trans);
+		if(trans.rd_req) begin
+			case (trans.wr_byte_en)
+				4'b1111: //4 Bytes Access
+				begin
+					if(mem[trans.addr] != trans.rdata) 
+          				$error("[SCB-FAIL] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr],trans.rdata);
+       				else 
+          				$display("[SCB-PASS] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr],trans.rdata);
+      			end
+				4'b0011: //2 Bytes Access
+				begin
+					if(mem[trans.addr][15:0] != trans.rdata[15:0]) 
+          				$error("[SCB-FAIL] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr][15:0],trans.rdata[15:0]);
+	       			else 
+    	      			$display("[SCB-PASS] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr][15:0],trans.rdata[15:0]);
+	      		end
+				4'b0001: //1 Byte Access
+				begin
+					if(mem[trans.addr][7:0] != trans.rdata[7:0]) 
+	          			$error("[SCB-FAIL] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr][7:0],trans.rdata[7:0]);
+	       			else 
+	          			$display("[SCB-PASS] Addr = %0h,\n \t   Data :: Expected = %0h Actual = %0h",trans.addr,mem[trans.addr][7:0],trans.rdata[7:0]);
+	      		end
+			endcase
+		end
+		else if(trans.wr_req)
+			mem[trans.addr] = trans.wdata;
+	
+		no_transactions++;
+		end
   endtask
   
 endclass
