@@ -1,6 +1,6 @@
 PIN_DEF = fpga/blackice-mx.pcf 
 DEVICE = hx8k
-SRC = rtl/top.v rtl/hyper_xface.v #rtl/baudgen.v rtl/baudgen_rx.v rtl/uart_rx.v rtl/uart_tx.v 
+SRC = rtl/top.v rtl/hyper_xface.v rtl/baudgen.v rtl/baudgen_rx.v rtl/uart_rx.v rtl/uart_tx.v 
 PORT = /dev/ttyACM0
 
 .PHONY: 

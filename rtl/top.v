@@ -1,5 +1,5 @@
 `default_nettype none
-`define ASIC 
+//`define ASIC 
 
 `ifndef ASIC
 	`include "baudgen.vh"
@@ -35,10 +35,10 @@ module top (
 `ifndef ASIC
 SB_PLL40_CORE #(
 		.FEEDBACK_PATH("SIMPLE"),
-		.DIVR(4'b0000),		// DIVR =  0
-		.DIVF(7'b0011010),	// DIVF = 26
+		.DIVR(4'b0001),		// DIVR =  1
+		.DIVF(7'b0111100),	// DIVF = 60
 		.DIVQ(3'b011),		// DIVQ =  3
-		.FILTER_RANGE(3'b010)	// FILTER_RANGE = 2
+		.FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
 	) uut (
 		//.LOCK(locked),
 		.RESETB(1'b1),
@@ -56,6 +56,16 @@ SB_PLL40_CORE #(
     reg reset = 1;
     wire nreset;
 	assign nreset = ~reset;
+
+	integer cnt = 0;
+
+	always @(posedge hram_clk) begin
+		if (cnt == 100) reset <= 0;
+		else begin
+			reset <= 1;
+			cnt++;
+		end
+	end
 
     // signals for hyper ram
     wire rd_rdy;
@@ -111,38 +121,10 @@ SB_PLL40_CORE #(
         .D_IN_0(data_pins_in)
     );
 `else
-
 	assign data_pins_in[7:0] = dram_dq_oe_l ? dram_dq : 8'bz;
 	assign dram_dq[7:0] = ~dram_dq_oe_l ? data_pins_out : 8'bz;
-
-/*
-	always @(*) begin
-		if (dram_dq_oe_l) begin
-			data_pins_in = dram_dq;	
-		end else begin
-			dram_dq = data_pins_out;	
-		end
-	end
-*/
 `endif
-//`ifdef ASIC
-//	reg [7:0] dram_dq_r;
-//	reg [7:0] data_pins_in_r;
-//	assign data_pins_in[7:0] = data_pins_in_r[7:0];
-//	
-//	always @(*) begin
-//		if ()
-//	end
-	// setup inout lines for data pins
-//	always @(posedge hram_clk) begin
-//	  if (~dram_dq_oe_l) begin
-//		dram_dq_r[7:0] <= data_pins_out[7:0];
-//	  end
-//	  else begin
-//		data_pins_in_r[7:0] <= dram_dq[7:0];
-//	  end 
-//	end	
-//`endif
+
     wire dram_rwds_out;
     wire dram_rwds_in;
     wire dram_rwds_oe_l;
@@ -165,26 +147,25 @@ SB_PLL40_CORE #(
 	assign dram_rwds = ~dram_rwds_oe_l ? dram_rwds_out : 1'bz;
 	assign dram_rwds_in = dram_rwds_oe_l ? dram_rwds : 1'bz;
 
-/*	always @(*) begin
-		if (dram_rwds_oe_l) begin
-			dram_rwds_in = dram_rwds;	
-		end else begin
-			dram_rwds = dram_rwds_out;	
-		end
-	end
-*/
 `endif
 
 // instantiate
     hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
+	`ifdef ASIC 
     .rd_req(hrd_req),
     .wr_req(hwr_req),
     .wr_d(hwr_d),
+    .addr(haddr),
+	`else 
+    .rd_req(rd_req),
+    .wr_req(wr_req),
+    .wr_d(wr_d),
+    .addr(addr),
+	`endif
     .rd_d(rd_d),
     .rd_rdy(rd_rdy),
     .wr_byte_en(wr_byte_en),
     .rd_num_dwords(rd_num_dwords),
-    .addr(haddr),
     .busy(busy),
 
 
@@ -193,9 +174,14 @@ SB_PLL40_CORE #(
     .mem_or_reg(mem_or_reg),
 
     // pins
+	`ifdef ASIC
     .dram_dq_in(hdata_pins_in), .dram_dq_out(data_pins_out), .dram_dq_oe_l(dram_dq_oe_l),
     .dram_rwds_in(hdram_rwds_in), .dram_rwds_out(dram_rwds_out), .dram_rwds_oe_l(dram_rwds_oe_l),
-    .dram_ck(dram_ck),
+	`else 
+    .dram_dq_in(data_pins_in), .dram_dq_out(data_pins_out), .dram_dq_oe_l(dram_dq_oe_l),
+    .dram_rwds_in(dram_rwds_in), .dram_rwds_out(dram_rwds_out), .dram_rwds_oe_l(dram_rwds_oe_l),
+    `endif
+	.dram_ck(dram_ck),
     .dram_rst_l(dram_rst_l),
     .dram_cs_l(dram_cs_l));
 
