@@ -14,8 +14,8 @@ vmake lib_module/ > Makefile
 
 if [ -z "$1" ]
 then
-      vsim work.top -do "do wave.do" -do "run $CYCLES"  #-t ns #-do "view wave -new"  
+      vsim work.top +param1=4 -do "do wave.do" -do "run $CYCLES"  #-t ns #-do "view wave -new"  
 else
-      vsim work.top $1 -do "run $CYCLES" #-t ns
+      vsim work.top +param1=$1 -do "do wave.do" -do "run $CYCLES" #-t ns
 fi
 

@@ -1,28 +1,27 @@
 `include "environment.sv"
 
-/*---------------------[TYPE OF ACCESS]------------------------------*/
-//Uncomment one and comment the rest
-
-//`define 4BYTE
-//`define 2BYTE
-`define 1BYTE
-
-/*-------------------------------------------------------------------*/
 program test(mem_intf intf);
 
 	class my_trans extends transaction;
+		
 		bit [31:0] count;
+		integer n_byte;
+
 		function void pre_randomize();
+			$value$plusargs("param1=%d", n_byte);
 			wr_req.rand_mode(0);
 			rd_req.rand_mode(0);
 			addr.rand_mode(0);
-			`ifdef 4BYTE
+			if (n_byte == 4) 	
 				wr_byte_en = 4'b1111; //write 4 bytes
-			`elsif 2BYTE
+			else if (n_byte == 2)
 				wr_byte_en = 4'b0011; //write 2 bytes
-      		`else
+      		else if (n_byte == 1)
 				wr_byte_en = 4'b0001; //write 1 byte
-			`endif
+			else begin
+				$display("Number of byte access invalid: %d bytes. Only can be 4/2/1 byte.\nExecution failed", n_byte);
+				$finish;
+			end
 		
 			if(cnt %2 == 0) begin
 				wr_req = 1;
@@ -33,13 +32,12 @@ program test(mem_intf intf);
 				wr_req = 0;
 				rd_req = 1;
 				addr  = count;
-				`ifdef 4BYTE
-					count = count + 3'b100; //aligened to 4
-				`elsif 2BYTE
-					count = count + 3'b010; //aligened to 2
-				`else
-					count = count + 3'b001; //aligened to 1
-				`endif
+				if (n_byte == 4) 	
+					count = count + 3'b100; //aligned to 4
+				else if (n_byte == 2)
+					count = count + 3'b010; //aligned to 2
+				else
+					count = count + 3'b001; //aligned to 1
 			end
 	      	cnt++;
 	   	endfunction

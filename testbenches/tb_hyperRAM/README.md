@@ -1,5 +1,7 @@
 # TESTBENCH
 
-To run the testbench, edit and comment or descomment the defines on rtl/wr_rd_test.sv in order to define the type of acces that you want. Then execute runtest.sh.
+To run the testbench, execute ./runtest.sh [<num_byte>].
 
-This testbench writes and reads 10 (by default) consecutive memory addresses
+The parameter num_byte specifies the number of bytes of each access (write & read). If the parameter is not specified, the alignment access will be 4 bytes by default. Take into account that the value of this parameter only can be 4/2/1 byte. 
+
+This testbench writes and reads 10 (by default) consecutive memory addresses.
