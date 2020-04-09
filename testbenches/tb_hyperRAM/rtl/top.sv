@@ -25,7 +25,7 @@ module top();
 initial begin
   	clk = 0;
 end	
-always #6.7 clk = ~clk;  //150MHz
+always #1.7 clk = ~clk;  //600MHz
 
 //power-up generation
 initial begin

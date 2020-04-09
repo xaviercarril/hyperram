@@ -441,7 +441,7 @@ always @ ( posedge clk ) begin : proc_fsm
    end 
 
    if ( reset == 1 ) begin 
-	 fsm_reset	<= 6'd30;
+	 fsm_reset	<= 6'd60;
      fsm_addr   <= 3'd0;
      fsm_data   <= 4'd0;
      fsm_wait   <= 6'd0;
