@@ -13,7 +13,7 @@ In order to synthesize the maximum frequency as posible:
  
 # ice stick test
 
-For higher speeds, the memory needs latency configuration. This test is at 12Mhz, so the default latencies are plenty and no configuration is performed.
+For higher speeds, the memory needs latency configuration. This test is at 96Mhz, so the default latencies are plenty and no configuration is performed.
 
 run make prog to synthesise and program onto an attached icestick.
 
@@ -21,9 +21,9 @@ then run ./control.py to test the ram
 
 # BlackIce Mx
 
-As in the ice stick test, the module is running at 12Mhz. Since the oscilator 
+As in the ice stick test, the module is running at 96Mhz. Since the oscilator 
 in the board is og 25Mhz, a PLL and a clock divider have been used to achive the
-12MHz clock.
+96MHz clock.
 
 Type ```make all``` to compile the bitstream.
 
