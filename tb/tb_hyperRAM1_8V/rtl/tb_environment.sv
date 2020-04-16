@@ -1,10 +1,10 @@
-`include "transaction.sv"
+`include "tb_transaction.sv"
 import transaction_pkg::*;
 
-`include "generator.sv"
-`include "driver.sv"
-`include "monitor.sv"
-`include "scoreboard.sv"
+`include "tb_generator.sv"
+`include "tb_driver.sv"
+`include "tb_monitor.sv"
+`include "tb_scoreboard.sv"
 
 class environment;
   

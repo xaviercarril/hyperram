@@ -1,4 +1,4 @@
-`include "environment.sv"
+`include "../tb_environment.sv"
 
 program test(mem_intf intf);
 

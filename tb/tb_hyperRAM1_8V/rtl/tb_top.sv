@@ -1,6 +1,8 @@
+`define TEST 
 
-`include "s27ks0641.v"
-`include "hyper_xface.v"
+`include "modules/s27ks0641.v"
+`include "../../rtl/hyper_xface_1_8V.v" //Module controller to test 
+//`include "tb_hyper_xface.v" //Module controller to test 
 
 `timescale 1 ns/1 ps
 
@@ -8,11 +10,11 @@
 //-------------------------------------------------------------------------
 
 //including interfcae and testcase files
-`include "interface.sv"
+`include "tb_interface.sv"
 
 //-------------------------[NOTE]---------------------------------
 //Particular testcase can be run by uncommenting, and commenting the rest
-`include "wr_rd_test.sv"
+`include "tests/tb_wr_rd_test.sv"
 //----------------------------------------------------------------
 
 module top();
@@ -50,7 +52,7 @@ initial begin
     rd_num_dwords = 6'h1;      // read 1 4 byte word
 
     latency_1x[7:0] = 8'h10;   // latency setup - not so important latency_1x because is configured to go at latency_2x
-    latency_2x[7:0] = 8'd21;   // 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
+    latency_2x[7:0] = 8'd21;   // 21 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2 data alignment - 1 fsm_addr cycle added
 end
 
 wire [7:0] data_pins_in, data_pins_out, dram_dq;

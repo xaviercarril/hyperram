@@ -92,7 +92,7 @@ SB_PLL40_CORE #(
 		rd_num_dwords <= 6'h1;		// read 1 4 byte word
 
 		latency_1x[7:0] <= 8'h10;	// latency setup - not so important latency_1x because is configured to go at latency_2x
-		latency_2x[7:0] <= 8'd22;	// 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2
+        latency_2x[7:0] <= 8'd22;    // 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2 data alignment
 		reset <= 0;
 	  end
 	end

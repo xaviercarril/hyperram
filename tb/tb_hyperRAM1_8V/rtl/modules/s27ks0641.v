@@ -108,7 +108,7 @@ module s27ks0641
 	
 //	Load SDF File
 	initial begin 
-		$sdf_annotate("./rtl/s27ks0641.sdf");
+		$sdf_annotate("./rtl/modules/s27ks0641.sdf");
 	end
     
 //  internal delays

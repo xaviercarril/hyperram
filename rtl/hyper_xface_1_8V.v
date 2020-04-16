@@ -13,7 +13,7 @@
 --              WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY
 --              AND FITNESS FOR A PARTICULAR PURPOSE. Please see the CERN OHL
 --              v.1.2 for applicable Conditions.
--- Description: S27KL0641DABHI020 : Cypress IC DRAM 64MBIT 3V 100MHZ 24BGA
+-- Description: S27KS0641DABHI020 : Cypress IC DRAM 64MBIT 1.8V 166MHZ 24BGA
 --              This is a dword interface module to HyperRAM for writing
 --              and reading DWORDs. It is optimized for RTL portability and
 --              simplicity rather than absolute bandwidth. The DRAM clock is
@@ -90,8 +90,7 @@
 --   Configd 3 Clock  83 MHz Latency, latency1x=0x04, latency2x=0x0a
 --     CfgReg0 write(0x00000800, 0x8fe40000);
 -- ***************************************************************************/
-`default_nettype none // Strictly enforce all nets to be declared
-  
+//`default_nettype none // Strictly enforce all nets to be declared
 module hyper_xface 
 (
   input  wire         reset,
@@ -129,6 +128,7 @@ module hyper_xface
   reg  [31:0]  data_sr;
   reg  [31:0]  rd_sr;
   reg  [1:0]   ck_phs;
+  reg  [5:0]   fsm_reset;
   reg  [2:0]   fsm_addr;
   reg  [3:0]   fsm_data;
   reg  [5:0]   fsm_wait;
@@ -260,7 +260,7 @@ always @ ( posedge clk ) begin : proc_lb_regs
  begin
    rd_d       <= 32'd0;
    rd_rdy     <= 0;
-   go_bit     <= 0;
+   //go_bit     <= 0;
    busy       <= run_jk | go_bit;
 
    if ( addr_shift == 1 ) begin
@@ -321,7 +321,8 @@ end // proc_lb_regs
 
 
 //-----------------------------------------------------------------------------
-// 3 State Machines:
+// 4 State Machines:
+//	fsm_reset: Counts the Reset Cycles (tRH)
 //  fsm_addr : Counts the Address Cycles
 //  fsm_wait : Counts the Latency Cycles
 //  fsm_data : Counts the Data Cycles
@@ -336,6 +337,9 @@ always @ ( posedge clk ) begin : proc_fsm
      rd_dwords_cnt <= rd_num_dwords[5:0];
    end
 
+   if (fsm_reset != 3'd0) begin
+	 fsm_reset <= fsm_reset - 1;
+   end
    if ( ck_phs[0] == 1 ) begin //for every clk_phs edge (posedge & negedge)
      if ( fsm_addr != 3'd0 ) begin
        dram_dq_oe_l   <= 0; // D[7:0] is Output 
@@ -417,11 +421,12 @@ always @ ( posedge clk ) begin : proc_fsm
      end 
    end 
 
-   if ( go_bit == 1 ) begin
-     fsm_addr       <= 3'd6;
+   if ( go_bit == 1 && fsm_reset == 3'd0) begin
+     fsm_addr       <= 3'd7;
      fsm_wait       <= 6'd0;
      fsm_data       <= 4'd0;
      run_jk         <= 1;
+	 go_bit			<= 0;
      dram_dq_oe_l   <= 1; // Default Input
      dram_rwds_oe_l <= 1; // Default Input
    end
@@ -436,6 +441,7 @@ always @ ( posedge clk ) begin : proc_fsm
    end 
 
    if ( reset == 1 ) begin 
+	 fsm_reset	<= 6'd60;
      fsm_addr   <= 3'd0;
      fsm_data   <= 4'd0;
      fsm_wait   <= 6'd0;
@@ -530,4 +536,4 @@ end // proc_out
   assign dram_cs_l = cs_l_reg;
 
 
-endmodule // hyper_xface.v
+endmodule // hyper_xface_1_8V.v
