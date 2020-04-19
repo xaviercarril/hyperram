@@ -1,6 +1,6 @@
 `define TEST 
 
-`include "modules/s27ks0641.v"
+`include "../../modules/s27ks0641.v"
 `include "../../rtl/hyper_xface_1_8V.v" //Module controller to test 
 //`include "tb_hyper_xface.v" //Module controller to test 
 
