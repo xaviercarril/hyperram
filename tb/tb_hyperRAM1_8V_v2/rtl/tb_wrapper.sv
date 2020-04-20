@@ -38,33 +38,33 @@ assign dram_rwds_in = dram_rwds_oe_l ? dram_rwds : 1'bz;
 wire sump_dbg [7:0];
 
 hyper_xface controller_ip(
-.reset				(reset),
-.clk				(clk),
-.rd_req				(rd_req),
-.wr_req				(wr_req),
-.mem_or_reg			(mem_or_reg),
-.wr_byte_en			(wr_byte_en),
-.rd_num_dwords		(rd_num_dwords),
-.addr				(addr),
-.wr_d				(wr_d),
-.rd_d				(rd_d),
-.rd_rdy				(rd_rdy),
-.busy				(busy),
-.burst_wr_rdy		(burst_wr_rdy),
-.latency_1x			(latency_1x),
-.latency_2x			(latency_2x),
+.reset          (reset),
+.clk            (clk),
+.rd_req         (rd_req),
+.wr_req         (wr_req),
+.mem_or_reg     (mem_or_reg),
+.wr_byte_en     (wr_byte_en),
+.rd_num_dwords  (rd_num_dwords),
+.addr           (addr),
+.wr_d           (wr_d),
+.rd_d           (rd_d),
+.rd_rdy         (rd_rdy),
+.busy           (busy),
+.burst_wr_rdy   (burst_wr_rdy),
+.latency_1x     (latency_1x),
+.latency_2x     (latency_2x),
 
-.dram_dq_in			(data_pins_in),
-.dram_dq_out		(data_pins_out),
-.dram_dq_oe_l		(dram_dq_oe_l),
-.dram_rwds_in		(dram_rwds_in),
-.dram_rwds_out		(dram_rwds_out),
-.dram_rwds_oe_l		(dram_rwds_oe_l),
-.dram_ck			(dram_ck),
-.dram_rst_l			(dram_rst_l),
-.dram_cs_l			(dram_cs_l)
+.dram_dq_in     (data_pins_in),
+.dram_dq_out    (data_pins_out),
+.dram_dq_oe_l   (dram_dq_oe_l),
+.dram_rwds_in   (dram_rwds_in),
+.dram_rwds_out  (dram_rwds_out),
+.dram_rwds_oe_l (dram_rwds_oe_l),
+.dram_ck        (dram_ck),
+.dram_rst_l     (dram_rst_l),
+.dram_cs_l      (dram_cs_l)
 
-//.sump_dbg           (sump_dbg)   //Useless in the testbench      
+//.sump_dbg           (sump_dbg)   //Useless in the testbench
 );
 
 

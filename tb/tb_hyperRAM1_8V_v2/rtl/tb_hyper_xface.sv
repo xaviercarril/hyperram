@@ -188,7 +188,7 @@ tb_wrapper tb_wrapper_inst (
                         `END_COLOR_PRINT
                     end
                 end
-            
+
                 if (test_order[i] == "2") begin
                     `START_BLUE_PRINT
                         $display("TEST 2 STARTED");
@@ -206,7 +206,7 @@ tb_wrapper tb_wrapper_inst (
                         `END_COLOR_PRINT
                     end
                 end
-                
+
                 if (test_order[i] == "3") begin
                     `START_BLUE_PRINT
                         $display("TEST 3 STARTED");
@@ -224,7 +224,7 @@ tb_wrapper tb_wrapper_inst (
                         `END_COLOR_PRINT
                     end
                 end
-                
+
                 if (test_order[i] == "4") begin
                     `START_BLUE_PRINT
                         $display("TEST 4 STARTED");
@@ -242,7 +242,7 @@ tb_wrapper tb_wrapper_inst (
                         `END_COLOR_PRINT
                     end
                 end
-                
+
                 if (test_order[i] == "5") begin
                     `START_BLUE_PRINT
                         $display("TEST 5 STARTED");
@@ -260,7 +260,6 @@ tb_wrapper tb_wrapper_inst (
                         `END_COLOR_PRINT
                     end
                 end
-
 
                 if (test_order[i] == "6") begin
                     `START_BLUE_PRINT
@@ -327,14 +326,14 @@ tb_wrapper tb_wrapper_inst (
     task automatic wr_mask;
         input int n_byte;
         begin
-            if (n_byte == 4) 	
-			    tb_wr_byte_en_i <= 4'b1111; //write 4 bytes
-		    else if (n_byte == 2)
-			    tb_wr_byte_en_i <= 4'b0011; //write 2 bytes
-          	else if (n_byte == 1)
-	    		tb_wr_byte_en_i <= 4'b0001; //write 1 byte
-		    else 
-			    $error("Number of byte access invalid: %d bytes. Only can be 4/2/1 byte.\nExecution failed", n_byte);
+            if (n_byte == 4)
+                tb_wr_byte_en_i <= 4'b1111; //write 4 bytes
+            else if (n_byte == 2)
+                tb_wr_byte_en_i <= 4'b0011; //write 2 bytes
+            else if (n_byte == 1)
+                tb_wr_byte_en_i <= 4'b0001; //write 1 byte
+            else 
+                $error("Number of byte access invalid: %d bytes. Only can be 4/2/1 byte.\nExecution failed", n_byte);
         end
     endtask
     
@@ -382,7 +381,7 @@ tb_wrapper tb_wrapper_inst (
 
             //Checking Process
             assert (tb_wr_d_i == tb_rd_d_o)
-                    $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[31:0]);
+                $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[31:0]);
             else begin
                 $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i, tb_wr_d_i, tb_rd_d_o);
                 ++tmp;
@@ -467,7 +466,7 @@ tb_wrapper tb_wrapper_inst (
                 addr_pck.randomize();
                 addr = addr_pck.addr;
                 tb_addr_i <= addr;
-    
+
                 //Write Process
                 wr_mask(4); //Write 4 bytes
                 wait(!tb_busy_o);
@@ -517,7 +516,7 @@ tb_wrapper tb_wrapper_inst (
 
             //Checking Process
             assert (tb_wr_d_i[31:0] == tb_rd_d_o[31:0])
-                    $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[31:0]);
+                $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[31:0]);
             else begin
                 $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i, tb_wr_d_i[31:0], tb_rd_d_o[31:0]);
                 ++tmp;
@@ -620,7 +619,7 @@ tb_wrapper tb_wrapper_inst (
         init_sim();
         init_dump();
         reset_dut();
-		$value$plusargs("param1=%s", arg);
+        $value$plusargs("param1=%s", arg);
         test_sim(arg);
         $finish;
     end
