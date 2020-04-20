@@ -10,7 +10,7 @@ module tb_wrapper(
     input  wire         wr_req,
     input  wire         mem_or_reg,
     input  wire [3:0]   wr_byte_en,
-    input  wire [5:0]   rd_num_dwords,
+    input  wire [21:0]  rd_num_dwords,
     input  wire [31:0]  addr,
     input  wire [31:0]  wr_d,
     output reg  [31:0]  rd_d,

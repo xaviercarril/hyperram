@@ -1,12 +1,21 @@
 #!/bin/bash
 
-echo "Which test will you want to prove?"
-echo "0: All"
+echo "Select order: (ex: 231)"
+echo "Default: All in sequential order"
 echo "1: Write and Read 4 bytes in one memory positon"
+echo "2: Write and Read 2 bytes in one memory positon"
+echo "3: Write and Read 1 byte in one memory positon"
+echo "4: Write and Read 4 bytes in 10 random memory positons"
+echo "5: Write and Read 4 bytes in an out of memory positon (This test needs to fail)"
+echo "6: Write and Read 4 bytes in 10 consecutive memory positon (bursting)"
+echo "7: Write and Read all memory (bursting)"
+
 read var1
-echo "Test $var1 selected"
 
-
+if [ -z "$var1" ]
+then
+    var1=1234567
+fi
 mv lib_module /tmp
 
 vlib lib_module

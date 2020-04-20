@@ -19,9 +19,6 @@ add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_rd_req_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_wr_req_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_wr_d_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_wr_byte_en_i
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/rd_data
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/wr_data
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/test_mask
 add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/addr
 add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/burst_wr_rdy
 add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/busy
@@ -80,8 +77,8 @@ add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller
 add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/ck_phs
 add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_reset
 add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_addr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_data
 add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_wait
+add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_data
 add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_rd_jk
 add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_jk
 add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_jk_sr
@@ -247,9 +244,9 @@ add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/UByt
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/UserPreload
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/Viol
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {300033130 ps} 0}
+WaveRestoreCursors {{Cursor 1} {150238000 ps} 0}
 quietly wave cursor active 1
-configure wave -namecolwidth 262
+configure wave -namecolwidth 325
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
 configure wave -signalnamewidth 0
@@ -263,4 +260,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits us
 update
-WaveRestoreZoom {299996381 ps} {300115677 ps}
+WaveRestoreZoom {150089413 ps} {150203742 ps}

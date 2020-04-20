@@ -68,7 +68,7 @@
 --  wr_req        : in  : When core not busy, assert 1ck to make write request.
 --  mem_or_req    : in  : 0=DRAM Memory. 1=Configuration Register 
 --  wr_byte_en    : in  : 0xF=Write all 4 bytes. 0xE write Bytes 3-1 but not 0.
---  rd_num_dwords : in  : Number of dwords to read, example 0x01.
+--  rd_num_dwords : in  : Number of dwords to read, example 0x01. The maximum is MEM_SIZE/4.
 --  addr          : in  : 32bit byte (not dword) address for 64Mbit DRAM cell.
 --  wr_d          : in  : 32bit Write Data to DRAM.
 --  rd_d          : out : 32bit Read Data from DRAM.
@@ -99,7 +99,7 @@ module hyper_xface
   input  wire         wr_req,
   input  wire         mem_or_reg,
   input  wire [3:0]   wr_byte_en,
-  input  wire [5:0]   rd_num_dwords,
+  input  wire [21:0]  rd_num_dwords,
   input  wire [31:0]  addr,
   input  wire [31:0]  wr_d,
   output reg  [31:0]  rd_d,
@@ -153,7 +153,7 @@ module hyper_xface
   reg          rd_done;
   reg  [3:0]   rd_cnt;
   reg  [2:0]   rd_fsm;
-  reg  [5:0]   rd_dwords_cnt;
+  reg  [21:0]  rd_dwords_cnt;
   reg          sample_now;
   reg          burst_wr_jk;
   reg          burst_wr_jk_clr;
@@ -334,7 +334,7 @@ always @ ( posedge clk ) begin : proc_fsm
    wait_shift <= 0;
    burst_wr_jk_clr <= 0;
    if ( rd_req == 1 ) begin
-     rd_dwords_cnt <= rd_num_dwords[5:0];
+     rd_dwords_cnt <= rd_num_dwords[21:0];
    end
 
    if (fsm_reset != 3'd0) begin
