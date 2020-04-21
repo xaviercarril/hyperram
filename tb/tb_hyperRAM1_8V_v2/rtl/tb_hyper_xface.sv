@@ -39,7 +39,7 @@ module tb_hyper_xface();
 // Local parameters
 //-----------------------------
     parameter VERBOSE         = 1;
-    parameter CLK_PERIOD      = 1.7; //600MHz
+    parameter CLK_PERIOD      = 2; //500MHz
     parameter CLK_HALF_PERIOD = CLK_PERIOD / 2;
     parameter RESET_DELAY     = 150e3; //150uS
     parameter MEM_SIZE        = 8388608; //8MB 
@@ -296,6 +296,24 @@ tb_wrapper tb_wrapper_inst (
                         `END_COLOR_PRINT
                     end
                 end
+
+                if (test_order[i] == "8") begin
+                    `START_BLUE_PRINT
+                        $display("TEST 8 STARTED");
+                    `END_COLOR_PRINT
+                    test_sim_8(tmp);
+                    if (tmp > 0) begin
+                        `START_RED_PRINT
+                            $display("TEST 8 FAILED");
+                            test_mask[8] = 0;
+                        `END_COLOR_PRINT
+                    end else begin
+                        `START_GREEN_PRINT
+                            $display("TEST 8 PASSED");
+                            test_mask[8] = 1;
+                        `END_COLOR_PRINT
+                    end
+                end
             end
             
             //Print Summary
@@ -322,7 +340,7 @@ tb_wrapper tb_wrapper_inst (
     endtask
 
 
-//***task automatic pre_write***
+//***task automatic wr_mask***
     task automatic wr_mask;
         input int n_byte;
         begin
@@ -341,7 +359,7 @@ tb_wrapper tb_wrapper_inst (
     task automatic read_req;
         begin
             tb_rd_req_i <= 1;
-            tick();
+            wait(tb_busy_o);
             tb_rd_req_i <= 0;
         end
     endtask
@@ -351,11 +369,20 @@ tb_wrapper tb_wrapper_inst (
     task automatic write_req;
         begin
             tb_wr_req_i <= 1;
-            tick();
+            wait(tb_busy_o);
             tb_wr_req_i <= 0;
         end
     endtask
 
+
+//***task automatic write_req_burst***
+    task automatic write_req_burst;
+        begin
+            tb_wr_req_i <= 1;
+            tick();
+            tb_wr_req_i <= 0;
+        end
+    endtask
 
 //***task automatic test_sim_1***
 // Test Write and Read 4 bytes in one memory positon
@@ -381,9 +408,9 @@ tb_wrapper tb_wrapper_inst (
 
             //Checking Process
             assert (tb_wr_d_i == tb_rd_d_o)
-                $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[31:0]);
+                $display("0x%h : 0x%h", tb_addr_i, tb_rd_d_o[31:0]);
             else begin
-                $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i, tb_wr_d_i, tb_rd_d_o);
+                $display("The data written in 0x%h should be 0x%h and it is 0x%h", tb_addr_i, tb_wr_d_i, tb_rd_d_o);
                 ++tmp;
             end
         end
@@ -413,9 +440,9 @@ tb_wrapper tb_wrapper_inst (
 
             //Checking Process
             assert (tb_wr_d_i[15:0] == tb_rd_d_o[15:0])
-                    $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[15:0]);
+                    $display("0x%h : 0x%h", tb_addr_i, tb_rd_d_o[15:0]);
             else begin
-                $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i, tb_wr_d_i[15:0], tb_rd_d_o[15:0]);
+                $display("The data written in 0x%h should be 0x%h and it is 0x%h", tb_addr_i, tb_wr_d_i[15:0], tb_rd_d_o[15:0]);
                 ++tmp;
             end
         end
@@ -445,9 +472,9 @@ tb_wrapper tb_wrapper_inst (
 
             //Checking Process
             assert (tb_wr_d_i[7:0] == tb_rd_d_o[7:0])
-                    $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[7:0]);
+                    $display("0x%h : 0x%h", tb_addr_i, tb_rd_d_o[7:0]);
             else begin
-                $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i, tb_wr_d_i[7:0], tb_rd_d_o[7:0]);
+                $display("The data written in 0x%h should be 0x%h and it is 0x%h", tb_addr_i, tb_wr_d_i[7:0], tb_rd_d_o[7:0]);
                 ++tmp;
             end
         end
@@ -482,9 +509,9 @@ tb_wrapper tb_wrapper_inst (
 
                 //Checking Process
                 assert (tb_wr_d_i[31:0] == tb_rd_d_o[31:0]) 
-                    $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[31:0]);
+                    $display("0x%h : 0x%h", tb_addr_i, tb_rd_d_o[31:0]);
                 else begin
-                    $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i, tb_wr_d_i[31:0], tb_rd_d_o[31:0]);
+                    $display("The data written in 0x%h should be 0x%h and it is 0x%h", tb_addr_i, tb_wr_d_i[31:0], tb_rd_d_o[31:0]);
                     ++tmp;
                 end
             end
@@ -516,9 +543,9 @@ tb_wrapper tb_wrapper_inst (
 
             //Checking Process
             assert (tb_wr_d_i[31:0] == tb_rd_d_o[31:0])
-                $display("0x%0h : 0x%0h", tb_addr_i, tb_rd_d_o[31:0]);
+                $display("0x%h : 0x%h", tb_addr_i, tb_rd_d_o[31:0]);
             else begin
-                $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i, tb_wr_d_i[31:0], tb_rd_d_o[31:0]);
+                $display("The data written in 0x%h should be 0x%h and it is 0x%h", tb_addr_i, tb_wr_d_i[31:0], tb_rd_d_o[31:0]);
                 ++tmp;
             end
         end
@@ -537,12 +564,14 @@ tb_wrapper tb_wrapper_inst (
             //Write Process
             wr_mask(4); //Write 4 bytes each burst
             wait(!tb_busy_o);
+            tb_wr_d_i <= wr_data;
+            write_req();
             // Bursting
-            for (int i = 0; i < 10; i++) begin
-                tb_wr_d_i <= wr_data + i;
-                write_req();
+            for (int i = 1; i < 10; i++) begin
                 wait(tb_burst_wr_rdy_o);
                 tick();
+                tb_wr_d_i <= wr_data + i;
+                write_req_burst();
             end
 
             //Read Process
@@ -558,9 +587,9 @@ tb_wrapper tb_wrapper_inst (
                 wait(tb_rd_rdy_o);
                 //Checking Process
                 assert ((wr_data + i) == tb_rd_d_o[31:0])
-                    $display("0x%0h : 0x%0h", tb_addr_i + i*4, tb_rd_d_o[31:0]);
+                    $display("0x%h : 0x%h", tb_addr_i + i*4, tb_rd_d_o[31:0]);
                 else begin
-                    $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i + i*4, (wr_data + i), tb_rd_d_o);
+                    $display("The data written in 0x%h should be 0x%h and it is 0x%h", tb_addr_i + i*4, (wr_data + i), tb_rd_d_o);
                     ++tmp;
                 end
             end
@@ -569,9 +598,56 @@ tb_wrapper tb_wrapper_inst (
    endtask
 
 //***task automatic test_sim_7***
-// Test Write and Read all memory (bursting) 
+// Test Write and Read 4 bytes in 242 consecutive memory positon (bursting the maximum as possible) 
 // Output should be nothing 
     task automatic test_sim_7;
+        output int tmp;
+        begin
+            bit [31:0] wr_data = 32'hABCDEF00; 
+            int num_burst = 242;    //Burst of 242 dword (968 bytes)
+            tmp = 0;
+            tb_addr_i <= 32'h0;
+
+            //Write Process
+            wr_mask(4); //Write 4 bytes each burst
+            wait(!tb_busy_o);
+            tb_wr_d_i <= wr_data;
+            write_req();
+            // Bursting
+            for (int i = 1; i < num_burst; i++) begin
+                wait(tb_burst_wr_rdy_o);
+                tick();
+                tb_wr_d_i <= wr_data + i;
+                write_req_burst();
+            end
+
+            //Read Process
+            tb_rd_num_dwords_i <= num_burst;  
+            tick();
+            wait(!tb_busy_o);
+            read_req();
+            // Bursting
+            for (int i = 0; i < num_burst; i++) begin
+                tick();
+                tick();
+                $display("Burst %0d:", i);
+                wait(tb_rd_rdy_o);
+                //Checking Process
+                assert ((wr_data + i) == tb_rd_d_o[31:0])
+                    $display("0x%h : 0x%h", tb_addr_i + i*4, tb_rd_d_o[31:0]);
+                else begin
+                    $display("The data written in 0x%h should be 0x%h and it is 0x%h", tb_addr_i + i*4, (wr_data + i), tb_rd_d_o);
+                    ++tmp;
+                end
+            end
+
+        end
+   endtask
+
+//***task automatic test_sim_8***
+// Test Write and Read all memory (bursting) 
+// Output should be nothing 
+    task automatic test_sim_8;
         output int tmp;
         begin
             bit [31:0] wr_data = 32'h0; 
@@ -581,12 +657,14 @@ tb_wrapper tb_wrapper_inst (
             //Write Process
             wr_mask(4); //Write 4 bytes each burst
             wait(!tb_busy_o);
+            tb_wr_d_i <= wr_data;
+            write_req();
             // Bursting
-            for (int i = 0; i < MEM_SIZE/4; i++) begin
-                tb_wr_d_i <= wr_data + i*4;
-                write_req();
+            for (int i = 1; i < MEM_SIZE/4; i++) begin
                 wait(tb_burst_wr_rdy_o);
                 tick();
+                tb_wr_d_i <= wr_data + i*4;
+                write_req_burst();
             end
 
             //Read Process
@@ -602,9 +680,9 @@ tb_wrapper tb_wrapper_inst (
                 wait(tb_rd_rdy_o);
                 //Checking Process
                 assert ((wr_data + i*4) == tb_rd_d_o[31:0])
-                    $display("0x%0h : 0x%0h", tb_addr_i + i*4, tb_rd_d_o[31:0]);
+                    $display("0x%h : 0x%h", tb_addr_i + i*4, tb_rd_d_o[31:0]);
                 else begin
-                    $display("The data written in 0x%0h should be 0x%0h and it is 0x%0h", tb_addr_i + i*4, (wr_data + i), tb_rd_d_o);
+                    $display("The data written in 0x%h should be 0x%h and it is 0x%h", tb_addr_i + i*4, (wr_data + i), tb_rd_d_o);
                     ++tmp;
                 end
             end

@@ -46,66 +46,67 @@ add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/sump_dbg
 add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_byte_en
 add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_d
 add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_req
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/reset
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/clk
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_req
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wr_req
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/mem_or_reg
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wr_byte_en
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_num_dwords
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/addr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wr_d
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_d
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_rdy
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/busy
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_rdy
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/latency_1x
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/latency_2x
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_in
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_out
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_oe_l
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rwds_in
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rwds_out
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rwds_oe_l
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_ck
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rst_l
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_cs_l
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sump_dbg
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/addr_sr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/data_sr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_sr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/ck_phs
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_reset
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_addr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_wait
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_data
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_rd_jk
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_jk
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_jk_sr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/go_bit
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rw_bit
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/reg_bit
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rwds_in_loc
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rwds_in_loc_p1
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/byte_wr_en
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sr_data
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sr_byte_en
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rd_d
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/addr_shift
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/data_shift
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wait_shift
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/cs_loc
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/cs_l_reg
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_ck_loc
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_done
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_cnt
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_fsm
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_dwords_cnt
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sample_now
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_jk
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_jk_clr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_sr
-add wave -noupdate -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_d
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/reset
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/clk
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_req
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wr_req
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/mem_or_reg
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wr_byte_en
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_num_dwords
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/addr
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wr_d
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_d
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_rdy
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/busy
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_rdy
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/latency_1x
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/latency_2x
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_in
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_out
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_oe_l
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rwds_in
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rwds_out
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rwds_oe_l
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_ck
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rst_l
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_cs_l
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sump_dbg
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/addr_sr
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/data_sr
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_sr
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/ck_phs
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_reset
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_addr
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_wait
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_data
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/fsm_bt
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_rd_jk
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_jk
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/run_jk_sr
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/go_bit
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rw_bit
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/reg_bit
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rwds_in_loc
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rwds_in_loc_p1
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/byte_wr_en
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sr_data
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sr_byte_en
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rd_d
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/addr_shift
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/data_shift
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wait_shift
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/cs_loc
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/cs_l_reg
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_ck_loc
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_done
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_cnt
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_fsm
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_dwords_cnt
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sample_now
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_jk
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_jk_clr
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_sr
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_d
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/ACT
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/Address
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/AddrRANGE
@@ -260,4 +261,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits us
 update
-WaveRestoreZoom {150089413 ps} {150203742 ps}
+WaveRestoreZoom {150427388 ps} {150541717 ps}

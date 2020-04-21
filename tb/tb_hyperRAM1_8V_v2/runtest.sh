@@ -8,13 +8,14 @@ echo "3: Write and Read 1 byte in one memory positon"
 echo "4: Write and Read 4 bytes in 10 random memory positons"
 echo "5: Write and Read 4 bytes in an out of memory positon (This test needs to fail)"
 echo "6: Write and Read 4 bytes in 10 consecutive memory positon (bursting)"
-echo "7: Write and Read all memory (bursting)"
+echo "7: Write and Read 4 bytes in 240 consecutive memory positon (bursting the maximum as possible)"
+echo "8: Write and Read all memory (bursting)"
 
 read var1
 
 if [ -z "$var1" ]
 then
-    var1=1234567
+    var1=12345678
 fi
 mv lib_module /tmp
 
