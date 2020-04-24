@@ -20,6 +20,6 @@ Available tests:
     
     6: Write and Read 4 bytes in 10 consecutive memory positon (bursting)
 
-    7: Write and Read 4 bytes in 242 consecutive memory positon (bursting the maximum as possible) 
+    7: Write and Read 4 bytes in 292 consecutive memory positon (bursting the maximum as possible) 
     
     8: Write and Read all memory (bursting)

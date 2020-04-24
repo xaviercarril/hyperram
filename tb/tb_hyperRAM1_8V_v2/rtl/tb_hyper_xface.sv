@@ -19,7 +19,7 @@
 // includes
 //-----------------------------
 
-`timescale 1 ns / 1 ns
+`timescale 1 ns / 1 ps
 `default_nettype none
 
 `include "../colors.vh"
@@ -39,7 +39,7 @@ module tb_hyper_xface();
 // Local parameters
 //-----------------------------
     parameter VERBOSE         = 1;
-    parameter CLK_PERIOD      = 2; //500MHz
+    parameter real CLK_PERIOD = 1 / 0.6; //600MHz
     parameter CLK_HALF_PERIOD = CLK_PERIOD / 2;
     parameter RESET_DELAY     = 150e3; //150uS
     parameter MEM_SIZE        = 8388608; //8MB 
@@ -598,13 +598,13 @@ tb_wrapper tb_wrapper_inst (
    endtask
 
 //***task automatic test_sim_7***
-// Test Write and Read 4 bytes in 242 consecutive memory positon (bursting the maximum as possible) 
+// Test Write and Read 4 bytes in 292 consecutive memory positon (bursting the maximum as possible) 
 // Output should be nothing 
     task automatic test_sim_7;
         output int tmp;
         begin
             bit [31:0] wr_data = 32'hABCDEF00; 
-            int num_burst = 242;    //Burst of 242 dword (968 bytes)
+            int num_burst = 292;    //Burst of 292 dword (1168 bytes)
             tmp = 0;
             tb_addr_i <= 32'h0;
 
