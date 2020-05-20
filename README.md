@@ -1,29 +1,25 @@
-# hyperram
+# HyperRAM Controller - Lattice ice40 FPGA iceStick 
 
 Portable Verilog RTL interface to S27KL0641DABHI020 64Mbit HyperRAM IC
 
 This is an open-source RTL project for a simple DWORD burst interface to a Cypress [S27KL0641DABHI020 64Mbit HyperRAM](http://www.cypress.com/part/s27kl0641dabhi020).
 
-# SYNTHESIS
+# Synthesis
 
 In order to synthesize the maximum frequency as posible:
 - Define ASIC on rtl/top.v
 - Comment on Makefile: rtl/baudgen.v rtl/baudgen_rx.v rtl/uart_rx.v rtl/uart_tx.v  
 - Comment on fpga/blackice-mx.pcf, the UART pins
  
-# ice stick test
+# HyperRAM simulation
 
-For higher speeds, the memory needs latency configuration. This test is at 12Mhz, so the default latencies are plenty and no configuration is performed.
+To simulate the HyperRAM module, check the README of the tb/tb_hyperRAM1_8V folder. 
 
-run make prog to synthesise and program onto an attached icestick.
+# iceStick test
 
-then run ./control.py to test the ram
-
-# BlackIce Mx
-
-As in the ice stick test, the module is running at 12Mhz. Since the oscilator 
+As in the ice stick test, the module is running at 96Mhz. Since the oscilator 
 in the board is og 25Mhz, a PLL and a clock divider have been used to achive the
-12MHz clock.
+96MHz clock.
 
 Type ```make all``` to compile the bitstream.
 
@@ -43,20 +39,18 @@ Once the previous step is done load the design into the FPGA:
 make prog
 ```
 
-Now you can run the ./control.py script from the software folder software.
+Now you can run the ./control.py script from the tb/tb_FPGA folder.
 You may need to change the serial port in the script.
+This test checks every address up to 1000, then every 100 up to full size of 2097151 (64Mb). 
 ```
 ser.port="/dev/ttyACM0"
 ```
-# clock modification
+# Clock modification
 
 If you want to edit the frequency Clock, first you have to edit the baudgen.vh in order to specify the baudrate speed.
+Also you have to include an icePLL function (SB_PLL40_CORE) on rtl/top.v , and be careful with the access latencies. 
 
-## test results
-
-* tested every address up to 100000, then every 100 up to full size of 2000000
-
-# connections
+# Connections
 
 I used a 1bitsquared HyperRAM pmod adapter. It shall be connected to MX2 (Side
 closest to R4 and R9).
