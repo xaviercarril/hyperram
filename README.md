@@ -13,9 +13,9 @@ In order to synthesize the maximum frequency as posible:
  
 # HyperRAM simulation
 
-To simulate the HyperRAM module, check the README of the tb/tb_hyperRAM1_8V folder. 
+To simulate the HyperRAM module of 1.8V at higher speed, check the README of the tb/tb_hyperRAM1_8V folder. 
 
-# iceStick test
+# iceStick test (HyperRAM 3V)
 
 As in the ice stick test, the module is running at 96Mhz. Since the oscilator 
 in the board is og 25Mhz, a PLL and a clock divider have been used to achive the
