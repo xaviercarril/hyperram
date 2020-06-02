@@ -15,7 +15,7 @@ read var1
 
 if [ -z "$var1" ]
 then
-    var1=12345678
+    var1=1234567
 fi
 #mv lib_module/ /tmp
 rm -rf lib_module

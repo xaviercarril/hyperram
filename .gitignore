@@ -8,3 +8,4 @@ top.bin
 test.vcd 
 test top.rpt
 rtl/top
+tmp

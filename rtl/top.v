@@ -1,5 +1,5 @@
 `default_nettype none
-//`define ASIC 
+`define ASIC 
 
 `ifndef ASIC
 	`include "baudgen.vh"
@@ -63,7 +63,7 @@ SB_PLL40_CORE #(
 		if (cnt == 100) reset <= 0;
 		else begin
 			reset <= 1;
-			cnt++;
+			cnt <= cnt + 1;
 		end
 	end
 
@@ -78,7 +78,7 @@ SB_PLL40_CORE #(
     reg mem_or_reg = 0;
 
     reg [3:0] wr_byte_en;
-    reg [5:0] rd_num_dwords;
+    reg [21:0] rd_num_dwords;
 
     reg [7:0] latency_1x;
 	reg [7:0] latency_2x;		
@@ -93,7 +93,6 @@ SB_PLL40_CORE #(
 
 		latency_1x[7:0] <= 8'h10;	// latency setup - not so important latency_1x because is configured to go at latency_2x
         latency_2x[7:0] <= 8'd22;    // 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2 data alignment
-		reset <= 0;
 	  end
 	end
 
