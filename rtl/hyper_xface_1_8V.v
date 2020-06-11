@@ -288,12 +288,18 @@ always @ ( posedge clk ) begin : proc_lb_regs
         else if ( data_shift == 1 ) begin
             data_sr[31:0]   <= { data_sr[23:0], 8'd0 };
             sr_byte_en[3:0] <= { sr_byte_en[2:0], 1'b0 };
-            if ( run_jk == 1 && wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
+            if ( run_jk == 1 & wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
                 burst_wr_jk <= 1;
                 burst_wr_d[31:0]  <= wr_d[31:0];
                 burst_wr_d[35:32] <= wr_byte_en[3:0];
             end 
         end
+
+        else if ( run_jk == 1 & wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
+            burst_wr_jk <= 1;
+            burst_wr_d[31:0]  <= wr_d[31:0];
+            burst_wr_d[35:32] <= wr_byte_en[3:0];
+        end 
         
 
         else if ( addr_shift == 1 ) begin
