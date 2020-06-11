@@ -257,76 +257,88 @@ end
 //-----------------------------------------------------------------------------
 // Shift Registers for 48bits of Ctrl+Addr and 32bits of Write Data
 //-----------------------------------------------------------------------------
-always @ ( posedge clk ) begin : proc_lb_regs
-    begin
-        
-        if ( rd_done == 1 ) begin
-            rd_d   <= rd_sr[31:0];
-            rd_rdy <= 1;
-        end 
-        else begin
-            rd_d       <= 32'd0;
-            rd_rdy     <= 0;
-        end
 
-        busy       <= run_jk | go_bit;
+always @ ( posedge clk ) 
+begin 
+    if ( rd_done == 1 ) begin
+        rd_d   <= rd_sr[31:0];
+        rd_rdy <= 1;
+    end 
+    else begin
+        rd_d       <= 32'd0;
+        rd_rdy     <= 0;
+    end
+end
+
+always @ (posedge clk , posedge reset) begin : proc_lb_regs
+begin
 
         if ( reset == 1) begin 
-            go_bit       <= 0;
-            burst_wr_jk  <= 0;
+            go_bit              <= 0;
+            burst_wr_jk         <= 0;
+            busy                <= 0;
+            rw_bit              <= 0;
+            reg_bit             <= 0;
+            data_sr[31:0]       <= 0;
+            sr_byte_en[3:0]     <= 0;
+            burst_wr_d[35:0]    <= 0;
+            addr_sr[47:0]         <= 0;
         end 
 
-        else if ( go_bit == 1 && fsm_reset == 7'd0) begin
-            go_bit <= 0;
-        end
-        else if ( burst_wr_jk_clr == 1 ) begin
-            data_sr[31:0]   <= burst_wr_d[31:0];
-            sr_byte_en[3:0] <= burst_wr_d[35:32];
-            burst_wr_jk <= 0;
-        end
+        else begin
+            busy       <= run_jk | go_bit;
+            if ( go_bit == 1 && fsm_reset == 7'd0) begin
+                go_bit <= 0;
+            end
+            else if ( burst_wr_jk_clr == 1 ) begin
+                data_sr[31:0]   <= burst_wr_d[31:0];
+                sr_byte_en[3:0] <= burst_wr_d[35:32];
+                burst_wr_jk <= 0;
+            end
 
-        else if ( data_shift == 1 ) begin
-            data_sr[31:0]   <= { data_sr[23:0], 8'd0 };
-            sr_byte_en[3:0] <= { sr_byte_en[2:0], 1'b0 };
-            if ( run_jk == 1 & wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
+            else if ( data_shift == 1 ) begin
+                data_sr[31:0]   <= { data_sr[23:0], 8'd0 };
+                sr_byte_en[3:0] <= { sr_byte_en[2:0], 1'b0 };
+                if ( run_jk == 1 & wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
+                    burst_wr_jk <= 1;
+                    burst_wr_d[31:0]  <= wr_d[31:0];
+                    burst_wr_d[35:32] <= wr_byte_en[3:0];
+                end 
+            end
+
+            else if ( run_jk == 1 & wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
                 burst_wr_jk <= 1;
                 burst_wr_d[31:0]  <= wr_d[31:0];
                 burst_wr_d[35:32] <= wr_byte_en[3:0];
             end 
-        end
 
-        else if ( run_jk == 1 & wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
-            burst_wr_jk <= 1;
-            burst_wr_d[31:0]  <= wr_d[31:0];
-            burst_wr_d[35:32] <= wr_byte_en[3:0];
-        end 
-        
 
-        else if ( addr_shift == 1 ) begin
-            addr_sr[47:0]  <= { addr_sr[39:0], 8'd0 };
-        end
-
-        else if ( run_jk == 0 && ( wr_req == 1 || rd_req == 1 ) && fsm_bt == 0 && go_bit == 0) begin
-            burst_wr_jk    <= 0;
-            //busy           <= 1;
-            go_bit         <= 1;// Kick off the FSM
-            sr_byte_en     <= wr_byte_en[3:0];
-            rw_bit         <= rd_req;     // 0=WriteOp, 1=ReadOp
-            reg_bit        <= mem_or_reg; // 0=MemSpace,1=RegSpace
-            addr_sr[47]    <= rd_req;     // 0=WriteOp, 1=ReadOp
-            addr_sr[46]    <= mem_or_reg;// 0=MemSpace,1=ReadSpace
-            addr_sr[45]    <= 1'b1;// Linear Burst
-            addr_sr[15:3]  <= 13'd0;
-            if ( mem_or_reg == 0 ) begin
-                addr_sr[44:16] <= addr[30:2];
-                addr_sr[2:0]   <= { addr[1:0], 1'b0 };// Always getting DWORD
-            end else begin
-                addr_sr[44:16] <= addr[31:3];
-                addr_sr[2:0]   <= addr[2:0];// Reg access needs 16bit LSB bit
+            else if ( addr_shift == 1 ) begin
+                addr_sr[47:0]  <= { addr_sr[39:0], 8'd0 };
             end
-            data_sr[31:0]  <= wr_d[31:0];
+
+            else if ( run_jk == 0 && ( wr_req == 1 || rd_req == 1 ) && fsm_bt == 0 && go_bit == 0) begin
+                burst_wr_jk    <= 0;
+                //busy           <= 1;
+                go_bit         <= 1;// Kick off the FSM
+                sr_byte_en     <= wr_byte_en[3:0];
+                rw_bit         <= rd_req;     // 0=WriteOp, 1=ReadOp
+                reg_bit        <= mem_or_reg; // 0=MemSpace,1=RegSpace
+                addr_sr[47]    <= rd_req;     // 0=WriteOp, 1=ReadOp
+                addr_sr[46]    <= mem_or_reg;// 0=MemSpace,1=ReadSpace
+                addr_sr[45]    <= 1'b1;// Linear Burst
+                addr_sr[15:3]  <= 13'd0;
+                if ( mem_or_reg == 0 ) begin
+                    addr_sr[44:16] <= addr[30:2];
+                    addr_sr[2:0]   <= { addr[1:0], 1'b0 };// Always getting DWORD
+                end else begin
+                    addr_sr[44:16] <= addr[31:3];
+                    addr_sr[2:0]   <= addr[2:0];// Reg access needs 16bit LSB bit
+                end
+                data_sr[31:0]  <= wr_d[31:0];
+            end
         end
-        
+
     end
 end // proc_lb_regs
 
@@ -339,28 +351,39 @@ end // proc_lb_regs
 //  fsm_data : Counts the Data Cycles
 //  fsm_bt   : Counts the Between Transactions Cycles (tCSHI)
 //-----------------------------------------------------------------------------
-always @ ( posedge clk ) begin : proc_fsm
-    begin
+always @ ( posedge clk , posedge reset) begin : proc_fsm
+begin
+
+    if ( reset == 1 ) begin 
+        fsm_reset	<= 7'd120; //200ns : 120 cycles if clk = 600MHz
+        fsm_addr   <= 3'd0;
+        fsm_data   <= 4'd0;
+        fsm_wait   <= 6'd0;
+        fsm_bt     <= 4'd0;
+        run_jk     <= 0;
+        run_rd_jk  <= 0;
+        run_jk_sr  <= 0;
+        byte_wr_en <= 0;
+        addr_shift <= 0;
+        data_shift <= 0;
+        burst_wr_jk_clr <= 0;
+        cs_loc     <= 0;
+        dram_dq_oe_l   <= 0; // Output for Writes
+        dram_rwds_oe_l <= 0; // Output for Writes
+        sr_data    <= 0;
+        rd_dwords_cnt <= 0;
+        burst_wr_rdy <= 0;
+        burst_wr_sr <= 0;
+    end 
+    else begin
+
         addr_shift <= 0;
         data_shift <= 0;
         //wait_shift <= 0;
         burst_wr_jk_clr <= 0;
 
         run_jk_sr <= { run_jk_sr[2:0], run_jk };
-
-        if ( reset == 1 ) begin 
-            fsm_reset	<= 7'd120; //200ns : 120 cycles if clk = 600MHz
-            fsm_addr   <= 3'd0;
-            fsm_data   <= 4'd0;
-            fsm_wait   <= 6'd0;
-            fsm_bt     <= 4'd0;
-            run_jk     <= 0;
-            run_rd_jk  <= 0;
-            byte_wr_en <= 0;
-           // cs_loc     <= 0;
-        end 
-
-        else if (fsm_reset != 7'd0) begin
+        if (fsm_reset != 7'd0) begin
             fsm_reset <= fsm_reset - 1;
         end
 
@@ -416,7 +439,8 @@ always @ ( posedge clk ) begin : proc_fsm
                         fsm_wait <= latency_2x[5:0];
                     end
                 end
-            end else begin
+            end 
+            else begin
                 fsm_wait <= 6'd0;
                 fsm_data <= 4'd0;
             end
@@ -467,108 +491,30 @@ always @ ( posedge clk ) begin : proc_fsm
             end
         end
 
-        else if ( ck_phs[0] == 1 ) begin //for every clk_phs edge (posedge & negedge)
-            /*if ( fsm_addr != 3'd0 ) begin
-                dram_dq_oe_l   <= 0; // D[7:0] is Output 
-                dram_rwds_oe_l <= 1; // RWDS is Input
-                fsm_addr <= fsm_addr - 1;
-                if ( fsm_addr == 3'd1 ) begin
-                    // Register Writes have zero latency
-                    if ( reg_bit == 1 && rw_bit == 0 ) begin
-                        fsm_wait <= 6'd0;
-                        fsm_data <= 4'd2;
-                    end 
-                    else if ( rw_bit == 1 ) begin
-                        //Mem Reads
-                        fsm_wait  <= 6'd63;// This actually ends from RWDS strobing
-                        //fsm_wait  <= latency_2x[5:0];// This actually ends from RWDS strobing
-                        run_rd_jk <= 1;
-                    end
-                    else begin
-                        // Mem Writes Sample RWDS to determine 1 or 2 latency periods
-                        // fsm_wait positions write data at appropriate place in time.
-                        if ( rwds_in_loc == 0 ) begin
-                            fsm_wait <= latency_1x[5:0];
-                        end else begin
-                            fsm_wait <= latency_2x[5:0];
-                        end
-                    end
-                end else begin
-                    fsm_wait <= 6'd0;
-                    fsm_data <= 4'd0;
-                end
-                sr_data    <= addr_sr[47:40];
-                addr_shift <= 1;
-            end*/ 
-            /*
-            if ( fsm_wait != 6'd0 ) begin
-                byte_wr_en <= 0;
-                wait_shift <= 1;
-                fsm_wait   <= fsm_wait - 1;
-                if ( fsm_wait == 6'd1 ) begin
-                    fsm_data <= 4'd4;// Number of Bytes to Write
-                end
-                if ( rw_bit == 1 ) begin
-                    dram_dq_oe_l   <= 1; // Input for Reads
-                    dram_rwds_oe_l <= 1; // Input for Reads
-                end else begin
-                    dram_dq_oe_l   <= 0; // Output for Writes
-                    dram_rwds_oe_l <= 0; // Output for Writes
-                end
-                //sr_data <= { 2'd0, fsm_wait[5:0] };// Marker for when Latency is wrong
-            end*/
-            
-            /*if ( fsm_data != 4'd0 ) begin
-                fsm_data   <= fsm_data - 1;
-                sr_data    <= data_sr[31:24];
-                byte_wr_en <= sr_byte_en[3];
-                data_shift <= 1;
-                if ( fsm_data == 4'd1 ) begin
-                    if ( burst_wr_jk == 1 ) begin 
-                        run_jk          <= 1;
-                        burst_wr_jk_clr <= 1;
-                        fsm_data        <= 4'd4;// Number of Bytes to Write
-                    end else begin
-                        fsm_bt <= 4'd15; //tRWR = tCSHI + tCSS + 1.5 cycle >= 36 ns
-                        run_jk <= 0;
-                    end
-                end
-                if ( rw_bit == 1 ) begin
-                    dram_dq_oe_l   <= 1; // Input for Reads
-                    dram_rwds_oe_l <= 1; // Input for Reads
-                end else begin
-                    dram_dq_oe_l   <= 0; // Output for Writes
-                    dram_rwds_oe_l <= 0; // Output for Writes
-                end
-            end*/
-
-        end // if ( ck_phs[0] == 1 ) begin 
-        
-
         else if ( rd_req == 1 ) begin
             rd_dwords_cnt <= rd_num_dwords[21:0];
         end
-        
-        
-        if ( run_jk == 1 ) begin
-            cs_loc <= 1;
-        end else if ( run_jk_sr[1:0] == 2'd0 ) begin
-            cs_loc <= 0;
-            //dram_dq_oe_l   <= 1; // Default Input
-            //dram_rwds_oe_l <= 1; // Default Input
-        end 
-        
-        
-        if ( fsm_data == 4'd4 && burst_wr_rdy == 0 ) begin
-            burst_wr_rdy <= 1;
-        end
-        else begin
-            burst_wr_rdy <= 0;
-        end
 
-        // Protection against wr_req coming in too late. There is a 5 clock window
-        burst_wr_sr[4:0] <= { burst_wr_sr[3:0], burst_wr_rdy };
+    if ( run_jk == 1 ) begin
+        cs_loc <= 1;
+    end else if ( run_jk_sr[1:0] == 2'd0 ) begin
+        cs_loc <= 0;
+        //dram_dq_oe_l   <= 1; // Default Input
+        //dram_rwds_oe_l <= 1; // Default Input
+    end 
+
+
+    if ( fsm_data == 4'd4 && burst_wr_rdy == 0 ) begin
+        burst_wr_rdy <= 1;
     end
+    else begin
+        burst_wr_rdy <= 0;
+    end
+
+    // Protection against wr_req coming in too late. There is a 5 clock window
+    burst_wr_sr[4:0] <= { burst_wr_sr[3:0], burst_wr_rdy };
+    end 
+end
 end // proc_fsm
 
 
@@ -637,20 +583,26 @@ assign sump_dbg[7:4] = rd_cnt[3:0];
 //-----------------------------------------------------------------------------
 // IO Flops
 //-----------------------------------------------------------------------------
-always @ ( posedge clk ) begin : proc_out
+always @ ( posedge clk, posedge reset ) begin : proc_out
     begin
-        dram_ck_loc   <= ck_phs[1];
-        dram_ck       <= dram_ck_loc;
-        rwds_in_loc   <= dram_rwds_in;
-        dram_rd_d     <= dram_dq_in[7:0];
-        dram_dq_out   <= sr_data[7:0];
-        dram_rwds_out <= ~ byte_wr_en;// Note: rwds is a mask, 1==Don't Write Byte
         
         if ( reset == 1 ) begin
             cs_l_reg <= 1;
+            dram_ck_loc   <= 0;
+            dram_ck       <= 0;
+            rwds_in_loc   <= 0;
+            dram_rd_d     <= 0;
+            dram_dq_out   <= 0;
+            dram_rwds_out <= 1;// Note: rwds is a mask, 1==Don't Write Byte
         end 
         else begin
-            cs_l_reg    <= ~ cs_loc;
+            cs_l_reg <= ~ cs_loc;
+            dram_ck_loc   <= ck_phs[1];
+            dram_ck       <= dram_ck_loc;
+            rwds_in_loc   <= dram_rwds_in;
+            dram_rd_d     <= dram_dq_in[7:0];
+            dram_dq_out   <= sr_data[7:0];
+            dram_rwds_out <= ~ byte_wr_en;// Note: rwds is a mask, 1==Don't Write Byte
         end
 
     end
