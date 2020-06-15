@@ -1,0 +1,13 @@
+{signal: [
+  {name: 'clk', 					wave: 'p...|.................'},
+  {name: 'rst', 					wave: 'x0..|.................'},
+  {name: 'addr[31:0]', 				wave: '02.x|.................', data:['@']},
+  {name: 'wr_d[31:0]', 				wave: 'x2.x|..2x.............', data:['DATA','DATA']},
+  {name: 'wr_byte_en[3:0]', 		wave: 'x2.x|..2x.............', data:['0xF','0x3']},
+  {name: 'wr_req', 					wave: '01.0|..10.............'},
+  {name: 'busy', 					wave: '0.1.|...............0.'},
+  {name: 'burst_wr_rdy', 			wave: '0...|.10.....10.......'},
+  {name: 'latency_2x[7:0]', 		wave: '2.x.|.................'},
+  {name: 'mem_or_reg', 				wave: '1.x.|.................'}
+]
+}

@@ -1,0 +1,13 @@
+{signal: [
+  {name: 'clk', 					wave: 'p...|.....'},
+  {name: 'rst', 					wave: 'x0..|.....'},
+  {name: 'addr[31:0]', 				wave: '02.x|.....', data:['@']},
+  {name: 'rd_num_dwords[21:0]', 	wave: '2.x.|.....', data:['1']},
+  {name: 'rd_req', 					wave: '01.0|.....'},
+  {name: 'rd_rdy', 					wave: '0...|.10..'},
+  {name: 'busy', 					wave: '0.1.|.0...'},
+  {name: 'rd_d[31:0]', 				wave: 'x...|.2x..', data:['DATA']},
+  {name: 'latency_2x[7:0]', 		wave: '2.x.|.....'},
+  {name: 'mem_or_reg', 				wave: '1.x.|.....'}
+]
+}
