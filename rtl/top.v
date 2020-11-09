@@ -1,5 +1,5 @@
 `default_nettype none
-`define ASIC 
+//`define ASIC 
 
 `ifndef ASIC
 	`include "baudgen.vh"
@@ -7,6 +7,7 @@
 
 module top (
     input wire clk,
+    input wire rstn,
 `ifndef ASIC
     // Serial
     input wire rx,
@@ -28,24 +29,25 @@ module top (
     output wire dram_cs_l
 );
 
-//Use PLL to go from 25MHz to 85Mhz
+//Use PLL to go from 25MHz to 50Mhz
 	wire clk_pll;
-//25MHz to 85MHz
+//25MHz to 50MHz
 
 `ifndef ASIC
 SB_PLL40_CORE #(
-		.FEEDBACK_PATH("SIMPLE"),
-		.DIVR(4'b0001),		// DIVR =  1
-		.DIVF(7'b0111100),	// DIVF = 60
-		.DIVQ(3'b011),		// DIVQ =  3
-		.FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
-	) uut (
-		//.LOCK(locked),
-		.RESETB(1'b1),
-		.BYPASS(1'b0),
-		.REFERENCECLK(clk),
-		.PLLOUTCORE(clk_pll)
-		);
+    .FEEDBACK_PATH("SIMPLE"),
+    .DIVR(4'b0000),         // DIVR =  0
+    .DIVF(7'b0011111),      // DIVF = 31
+    .DIVQ(3'b100),          // DIVQ =  4
+    .FILTER_RANGE(3'b010)   // FILTER_RANGE = 2
+
+    ) uut (
+        //.LOCK(locked),
+        .RESETB(1'b1),
+        .BYPASS(1'b0),
+        .REFERENCECLK(clk),
+        .PLLOUTCORE(clk_pll)
+    );
 `endif
 `ifdef ASIC
 	assign clk_pll = clk;
@@ -53,54 +55,39 @@ SB_PLL40_CORE #(
 
     wire hram_clk;
     assign hram_clk = clk_pll;
-    reg reset = 1;
-    wire nreset;
-	assign nreset = ~reset;
 
-	integer cnt = 0;
-
-	always @(posedge hram_clk) begin
-		if (cnt == 100) reset <= 0;
-		else begin
-			reset <= 1;
-			cnt <= cnt + 1;
-		end
-	end
+//	integer cnt = 0;
+//
+//	always @(posedge hram_clk) begin
+//		if (cnt == 100) reset <= 0;
+//		else begin
+//			reset <= 1;
+//			cnt <= cnt + 1;
+//		end
+//	end
 
     // signals for hyper ram
     wire rd_rdy;
-    reg rd_req = 0;
-    reg wr_req = 0;
-    reg [31:0] addr = 32'b0;
+    reg rd_req;
+    reg wr_req;
+    reg [31:0] addr;
     reg [31:0] wr_d;
     wire [31:0] rd_d;
     wire busy;
-    reg mem_or_reg = 0;
+    reg mem_or_reg;
 
     reg [3:0] wr_byte_en;
     reg [21:0] rd_num_dwords;
 
     reg [7:0] latency_1x;
 	reg [7:0] latency_2x;		
-    
-	// initialization
-	always @(posedge hram_clk) begin
-	  if (reset == 1) begin
-		mem_or_reg <= 0;
-
-		wr_byte_en <= 4'hF;			// write 4 bytes
-		rd_num_dwords <= 6'h1;		// read 1 4 byte word
-
-		latency_1x[7:0] <= 8'h10;	// latency setup - not so important latency_1x because is configured to go at latency_2x
-        latency_2x[7:0] <= 8'd22;    // 22 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2 data alignment
-	  end
-	end
+   
 
 	// latch data when it's ready
     reg [31:0] ram_data;
-    always @(posedge hram_clk)
-      if(rd_rdy)
-        ram_data <= rd_d;
+    always @(posedge hram_clk) begin
+      if (rd_rdy) ram_data <= rd_d;
+    end
 
     wire [7:0] data_pins_in;
     wire [7:0] data_pins_out;
@@ -149,7 +136,9 @@ SB_PLL40_CORE #(
 `endif
 
 // instantiate
-    hyper_xface hyper_xface_0(.reset(reset), .clk(hram_clk),
+hyperram_controller hyperram_controller(
+    .resetn(rstn),
+    .clk(hram_clk),
 	`ifdef ASIC 
     .rd_req(hrd_req),
     .wr_req(hwr_req),
@@ -202,14 +191,14 @@ SB_PLL40_CORE #(
 
     // instantiate rx and tx
     uart_rx #(.BAUD(BAUD)) RX0 (.clk(hram_clk),
-           .rstn(nreset),
+           .rstn(rstn),
            .rx(rx),
            .rcv(rcv),
            .data(rx_data)
           );
 
     uart_tx #(.BAUD(BAUD)) TX0 ( .clk(hram_clk),
-             .rstn(nreset),
+             .rstn(rstn),
              .start(tx_strb),
              .data(tx_data),
              .tx(tx),
@@ -241,43 +230,65 @@ SB_PLL40_CORE #(
   // serial interface
   // waits for 5 data bytes and 1 end byte
   // first byte is a command (see above), second 4 make up an unsigned integer
-  always @(posedge hram_clk) begin
-    if (rcv) begin
-        rx_reg <= {rx_reg[31:0], rx_data};
-        rx_byte_cnt <= rx_byte_cnt + 1;
-        if(rx_byte_cnt == 5) begin
-            case(cmd_byte)
-                ADDR:  begin addr <= data_bytes; tx_reg <= data_bytes; end
-                LOAD:  begin wr_d <= data_bytes; tx_reg <= data_bytes; end
-                WRITE: begin wr_req <= 1; tx_reg <= WRITE; end
-                READ:  tx_reg <= ram_data;
-                READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
-                COUNT: begin tx_reg <= count; count <= count + 1; end
-                CONST: tx_reg <= 32'd259;
-                default: tx_reg <= count;
-            endcase
-            rx_byte_cnt <= 0;
-            // only want 4, but couldn't get it to work, so read an extra in the control program
-            tx_bytes <= 5;
-        end
-    end else begin
-        rd_req <= 0;
-        wr_req <= 0;
-    end
+  always @(posedge hram_clk, negedge rstn) begin
+      // initialization
+      if (rstn == 0) begin
+          mem_or_reg <= 0;
 
-    // if a command is received, the tx data is queued in tx_reg
-    // so while there are bytes to send, send each one
-    if (tx_bytes > 0 )begin
-        if(ready) begin
-            tx_strb <= 1'b1;
-            tx_data <= tx_reg[31:24]; 
-        // tx_uart takes 2 clock cycles for ready to go low after starting, so have to only do this on transition
-        end else if (~ready && last_ready) begin
-            tx_reg <= tx_reg << 8;
-            tx_bytes <= tx_bytes - 1;
-        end 
-    end else
-        tx_strb <= 1'b0;
+          wr_byte_en <= 4'h0;			// write 4 bytes
+          rd_num_dwords <= 6'h0;		// read 1 4 byte word
+
+          rd_req <= 1'b0;
+          wr_req <= 1'b0;
+
+          addr <= 32'b0;
+          wr_d <= 32'b0;
+
+          latency_1x[7:0] <= 8'h10;	// latency setup - not so important latency_1x because is configured to go at latency_2x
+          latency_2x[7:0] <= 8'd21;    // 21 edges = 6 cycles if configured at 166MHz * (2 latency_2x) * (2 controller is configured by each edge) - 2 data alignment
+      end
+      else begin
+          if (rcv) begin
+              if (rx_byte_cnt < 5) begin
+                  rx_reg <= {rx_reg[31:0], rx_data};
+                  rx_byte_cnt <= rx_byte_cnt + 1;
+              end
+          end
+          if (!busy && rx_byte_cnt == 5) begin
+              case(cmd_byte)
+                  ADDR:  begin addr <= data_bytes; tx_reg <= data_bytes; end
+                  LOAD:  begin wr_d <= data_bytes; tx_reg <= data_bytes; end
+                  WRITE: begin wr_req <= 1; tx_reg <= WRITE; end
+                  READ:  tx_reg <= ram_data;
+                  READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
+                  COUNT: begin tx_reg <= count; count <= count + 1; end
+                  CONST: tx_reg <= 32'd259;
+                  default: tx_reg <= count;
+              endcase
+              rx_byte_cnt <= 0;
+              // only want 4, but couldn't get it to work, so read an extra in the control program
+              tx_bytes <= 5;
+          end
+          else begin
+              rd_req <= 0;
+              wr_req <= 0;
+          end
+
+          // if a command is received, the tx data is queued in tx_reg
+          // so while there are bytes to send, send each one
+          if (tx_bytes > 0 )begin
+              if(ready) begin
+                  tx_strb <= 1'b1;
+                  tx_data <= tx_reg[31:24]; 
+                  // tx_uart takes 2 clock cycles for ready to go low after starting, so have to only do this on transition
+              end else if (~ready && last_ready) begin
+                  tx_reg <= tx_reg << 8;
+                  tx_bytes <= tx_bytes - 1;
+              end 
+          end else begin
+              tx_strb <= 1'b0;
+          end
+      end
 
   end
 `endif

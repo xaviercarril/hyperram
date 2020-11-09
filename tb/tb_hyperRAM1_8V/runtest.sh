@@ -22,7 +22,7 @@ rm -rf lib_module
 
 vlib lib_module
 vmap work $PWD/lib_module
-vlog +acc=rn +incdir+ rtl/tb_wrapper.sv rtl/tb_hyper_xface.sv colors.vh
+vlog +acc=rn +incdir+ -define SLOW rtl/tb_wrapper.sv rtl/tb_hyper_xface.sv colors.vh
 vmake lib_module/ > Makefile
 
 #vsim work.tb_module -do  "view wave -new" -do "do wave.do" -do "run 20"

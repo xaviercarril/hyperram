@@ -39,16 +39,16 @@ module tb_hyper_xface();
 // Local parameters
 //-----------------------------
     parameter VERBOSE         = 1;
-    parameter real CLK_PERIOD = 1 / 0.6; //600MHz
+    parameter real CLK_PERIOD = 1 / 0.2; //200MHz
     parameter CLK_HALF_PERIOD = CLK_PERIOD / 2;
-    parameter RESET_DELAY     = 150e3; //150uS
+    parameter RESET_DELAY     = 150; 
     parameter MEM_SIZE        = 8388608; //8MB 
 
 //-----------------------------
 // Signals
 //-----------------------------
-    //Reset & Clock 600MHz
-    reg tb_rst_i;
+    //Reset & Clock 200MHz
+    reg tb_rstn_i;
     reg tb_clk_i;
 
     //Request signals
@@ -81,7 +81,7 @@ module tb_hyper_xface();
 //-----------------------------
 
 tb_wrapper tb_wrapper_inst (
-    .reset          (tb_rst_i),
+    .resetn         (tb_rstn_i),
     .clk            (tb_clk_i),
     .rd_req         (tb_rd_req_i),
     .wr_req         (tb_wr_req_i),
@@ -111,9 +111,9 @@ tb_wrapper tb_wrapper_inst (
     task automatic reset_dut;
         begin
             $display("*** Toggle reset.");
-            tb_rst_i <= 1'b1;
+            tb_rstn_i <= 1'b0;
             #RESET_DELAY;
-            tb_rst_i <= 1'b0;
+            tb_rstn_i <= 1'b1;
             #CLK_PERIOD;
             $display("Done");
         end

@@ -1,15 +1,9 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/CLK_HALF_PERIOD
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/CLK_PERIOD
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/RESET_DELAY
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/VERBOSE
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_clk_i
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_rst_i
+add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_rstn_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_addr_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_burst_wr_rdy_o
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_latency_1x_i
-add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_latency_2x_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_mem_or_reg_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_rd_d_o
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_rd_num_dwords_i
@@ -19,35 +13,35 @@ add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_rd_req_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_wr_req_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_wr_d_i
 add wave -noupdate -expand -group tb_hyper_xface /tb_hyper_xface/tb_wr_byte_en_i
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/addr
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/burst_wr_rdy
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/busy
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/clk
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/data_pins_in
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/data_pins_out
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_ck
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_cs_l
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_dq
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_dq_oe_l
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rst_l
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rwds
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rwds_in
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rwds_oe_l
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rwds_out
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/latency_1x
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/latency_2x
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/mem_or_reg
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/rd_d
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/rd_num_dwords
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/rd_rdy
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/rd_req
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/reset
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/sump_dbg
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_byte_en
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_d
-add wave -noupdate -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_req
-add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/reset
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/clk
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/resetn
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/addr
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/burst_wr_rdy
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/busy
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/data_pins_in
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/data_pins_out
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_ck
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_cs_l
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_dq
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_dq_oe_l
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rst_l
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rwds
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rwds_in
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rwds_oe_l
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/dram_rwds_out
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/latency_1x
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/latency_2x
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/mem_or_reg
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/rd_d
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/rd_num_dwords
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/rd_rdy
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/rd_req
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/sump_dbg
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_byte_en
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_d
+add wave -noupdate -expand -group tb_wrapper /tb_hyper_xface/tb_wrapper_inst/wr_req
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/clk
+add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/resetn
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_req
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wr_req
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/mem_or_reg
@@ -59,8 +53,6 @@ add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/co
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_rdy
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/busy
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/burst_wr_rdy
-add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/latency_1x
-add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/latency_2x
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_in
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_out
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_dq_oe_l
@@ -70,7 +62,6 @@ add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/co
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_ck
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rst_l
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_cs_l
-add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/sump_dbg
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/addr_sr
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/data_sr
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/rd_sr
@@ -94,7 +85,6 @@ add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/co
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_rd_d
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/addr_shift
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/data_shift
-add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/wait_shift
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/cs_loc
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/cs_l_reg
 add wave -noupdate -expand -group hyper_xface /tb_hyper_xface/tb_wrapper_inst/controller_ip/dram_ck_loc
@@ -126,8 +116,6 @@ add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/ca_i
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/CK
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/CK_ipd
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/CKDiff
-add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/CKNeg
-add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/CKNeg_ipd
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/Config_reg
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/CONTINUOUS
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/CSNeg
@@ -182,7 +170,6 @@ add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/foun
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/glitch_dq
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/glitch_rwds
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/glitch_rwdsR
-add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/half_period
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/HiAddrBit
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/HYBRID
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/LByteMask
@@ -232,7 +219,6 @@ add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/RWDS
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/RWDSout_zd_tmp
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/RWDSRt_01
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/RWDSt_01
-add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/SPEED166
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/STAND_BY
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/Start_BurstAddr
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/t_RWR_CHK
@@ -245,9 +231,9 @@ add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/UByt
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/UserPreload
 add wave -noupdate -group hyperRAM /tb_hyper_xface/tb_wrapper_inst/hyperRAM/Viol
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {150238000 ps} 0}
-quietly wave cursor active 1
-configure wave -namecolwidth 325
+WaveRestoreCursors {{Cursor 1} {994926 ps} 0} {{Cursor 2} {0 ps} 0}
+quietly wave cursor active 2
+configure wave -namecolwidth 356
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
 configure wave -signalnamewidth 0
@@ -261,4 +247,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits us
 update
-WaveRestoreZoom {150427388 ps} {150541717 ps}
+WaveRestoreZoom {0 ps} {293775 ps}

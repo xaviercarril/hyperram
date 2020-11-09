@@ -10,7 +10,7 @@ ser.baudrate=115200
 ser.timeout=1
 ser.open()
 
-cmds = { 
+cmds = {
     'ADDR' : 1 ,
     'LOAD' : 2,
     'WRITE' : 3,
@@ -31,7 +31,7 @@ def cmd(cmd, data=0):
 #    print(cmd, data )
     return data
 
-#memory size: 8388608B (8MB) = 2097152 words 
+#memory size: 8388608B (8MB) = 2097152 words
 write = True
 read = True
 tests = 0
@@ -55,8 +55,8 @@ try:
 
                 if read and write:
                     if(read_data == i):
-                        pass
-                        #print("pass")
+                        #pass
+                        print("pass")
                     else:
                         print("failed at addr %d, was %d at test %d" % (i, read_data, j))
                 #print("----")

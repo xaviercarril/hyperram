@@ -1,6 +1,6 @@
 /* ****************************************************************************
 -- (C) Copyright 2018 Kevin M. Hubbard - All rights reserved.
--- Source file: hyper_xface.v           
+-- Source file: hyperram_controller.v           
 -- Date:        April 2018
 -- Author:      khubbard
 -- Language:    Verilog-2001 
@@ -23,7 +23,12 @@
 --              clocks ) as to not require programming different values to the
 --              control register defaults ( 2x latency with 166 MHz ).
 --              Power On Reset : Part requires 150uS after Power On or Reset
---
+-- * -----------------------------------------------
+-- * Revision History
+-- * Revision   | Author     | Description
+-- * 0.1        | Xavier. C  | Include PLL input (ck_pll) & Lint warnings
+-- * -----------------------------------------------
+
 -- Write Cycle:
 --  clk        /\/\/\
 --  wr_req     / \__
@@ -63,7 +68,8 @@
 --  dram_dq      --<A><A><A><A><A><A><B><B><B><B><C><C><C><C><D><D><D><D>---
 --
 -- Core Interface Description:
---  clk           : in  : FPGA clock. Actual DRAM clock will be this Div-4.
+--  clk           : in  : Core clock.
+--  clk_pll       : in  : PLL clock if it is the case. Actual DRAM clock will be clk divided by 4.
 --  rd_req        : in  : When core not busy, assert 1ck to make read request.
 --  wr_req        : in  : When core not busy, assert 1ck to make write request.
 --  mem_or_req    : in  : 0=DRAM Memory. 1=Configuration Register 
@@ -91,10 +97,11 @@
 --     CfgReg0 write(0x00000800, 0x8fe40000);
 -- ***************************************************************************/
 //`default_nettype none // Strictly enforce all nets to be declared
-module hyper_xface 
+module hyperram_controller 
 (
-  input  wire         reset,
+  input  wire         resetn,
   input  wire         clk,
+
   input  wire         rd_req,
   input  wire         wr_req,
   input  wire         mem_or_reg,
@@ -109,6 +116,10 @@ module hyper_xface
   input  wire [7:0]   latency_1x,
   input  wire [7:0]   latency_2x,
 
+  `ifdef DEBUG
+      output wire [7:0]   sump_dbg,
+  `endif
+
   input  wire [7:0]   dram_dq_in,
   output reg  [7:0]   dram_dq_out,
   output reg          dram_dq_oe_l,
@@ -119,8 +130,8 @@ module hyper_xface
 
   output reg          dram_ck,
   output wire         dram_rst_l,
-  output wire         dram_cs_l,
-  output wire [7:0]   sump_dbg
+  output wire         dram_cs_l
+
 );// module hyper_xface 
 
 
@@ -128,7 +139,7 @@ module hyper_xface
   reg  [31:0]  data_sr;
   reg  [31:0]  rd_sr;
   reg  [1:0]   ck_phs;
-  reg  [6:0]   fsm_reset;
+  reg  [14:0]  fsm_reset;
   reg  [2:0]   fsm_addr;
   reg  [3:0]   fsm_data;
   reg  [5:0]   fsm_wait;
@@ -162,7 +173,7 @@ module hyper_xface
   reg  [35:0]  burst_wr_d;
 
 
-  assign dram_rst_l = ~ reset;
+  assign dram_rst_l = resetn;
 
 // Notes gleaned from datasheet:
 // The clock is not required to be free-running. 
@@ -243,6 +254,19 @@ module hyper_xface
 // would require fancy PLL phase shifting which falls beyond the scope of this
 // portable RTL only interface project.
 //-----------------------------------------------------------------------------
+`ifdef PLL
+//    assign ck_phs[1] = (run_jk) ? clk_pll : 1'b0;
+//    assign ck_phs[0] = (run_jk) ? clk : 1'b0;
+
+    always @(posedge clk) begin 
+        if (run_jk) begin
+            ck_phs[1] <= clk_pll;       // Div-4 phase 90
+            ck_phs[0] <= ~ck_phs[0];    // Div-2
+        end else begin
+            ck_phs[1:0] <= 2'b0;
+        end
+    end
+`else
 always @ ( posedge clk ) begin : proc_ck
  begin
    if ( run_jk == 1 ) begin 
@@ -252,7 +276,7 @@ always @ ( posedge clk ) begin : proc_ck
    end 
  end
 end
-
+`endif
 
 //-----------------------------------------------------------------------------
 // Shift Registers for 48bits of Ctrl+Addr and 32bits of Write Data
@@ -270,10 +294,10 @@ begin
     end
 end
 
-always @ (posedge clk , posedge reset) begin : proc_lb_regs
+always @ (posedge clk , negedge resetn) begin : proc_lb_regs
 begin
 
-        if ( reset == 1) begin 
+        if ( resetn == 0) begin 
             go_bit              <= 0;
             burst_wr_jk         <= 0;
             busy                <= 0;
@@ -299,19 +323,18 @@ begin
             else if ( data_shift == 1 ) begin
                 data_sr[31:0]   <= { data_sr[23:0], 8'd0 };
                 sr_byte_en[3:0] <= { sr_byte_en[2:0], 1'b0 };
-                if ( run_jk == 1 & wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
+                if ( run_jk == 1 && wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
                     burst_wr_jk <= 1;
                     burst_wr_d[31:0]  <= wr_d[31:0];
                     burst_wr_d[35:32] <= wr_byte_en[3:0];
                 end 
             end
 
-            else if ( run_jk == 1 & wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
+            else if ( run_jk == 1 && wr_req == 1 && burst_wr_sr[4:0] != 5'd0 ) begin
                 burst_wr_jk <= 1;
                 burst_wr_d[31:0]  <= wr_d[31:0];
                 burst_wr_d[35:32] <= wr_byte_en[3:0];
             end 
-
 
             else if ( addr_shift == 1 ) begin
                 addr_sr[47:0]  <= { addr_sr[39:0], 8'd0 };
@@ -328,13 +351,13 @@ begin
                 addr_sr[46]    <= mem_or_reg;// 0=MemSpace,1=ReadSpace
                 addr_sr[45]    <= 1'b1;// Linear Burst
                 addr_sr[15:3]  <= 13'd0;
-                if ( mem_or_reg == 0 ) begin
-                    addr_sr[44:16] <= addr[30:2];
-                    addr_sr[2:0]   <= { addr[1:0], 1'b0 };// Always getting DWORD
-                end else begin
+                /*if ( mem_or_reg == 0 ) begin
+                    addr_sr[44:16] <= addr[31:3];
+                    addr_sr[2:0]   <= addr[2:0];// Always getting DWORD
+                end else begin*/
                     addr_sr[44:16] <= addr[31:3];
                     addr_sr[2:0]   <= addr[2:0];// Reg access needs 16bit LSB bit
-                end
+                //end
                 data_sr[31:0]  <= wr_d[31:0];
             end
         end
@@ -351,11 +374,16 @@ end // proc_lb_regs
 //  fsm_data : Counts the Data Cycles
 //  fsm_bt   : Counts the Between Transactions Cycles (tCSHI)
 //-----------------------------------------------------------------------------
-always @ ( posedge clk , posedge reset) begin : proc_fsm
+always @ ( posedge clk , negedge resetn) begin : proc_fsm
 begin
 
-    if ( reset == 1 ) begin 
-        fsm_reset	<= 7'd120; //200ns : 120 cycles if clk = 600MHz
+    if ( resetn == 0 ) begin 
+        `ifdef SLOW
+            fsm_reset <= 15'h759B;  //150us : 30000 cycles if clk = 50MHz
+        `else
+            fsm_reset <= 13'd120; //200ns : 120 cycles if clk = 600MHz
+        `endif
+
         fsm_addr   <= 3'd0;
         fsm_data   <= 4'd0;
         fsm_wait   <= 6'd0;
@@ -383,7 +411,7 @@ begin
         burst_wr_jk_clr <= 0;
 
         run_jk_sr <= { run_jk_sr[2:0], run_jk };
-        if (fsm_reset != 7'd0) begin
+        if (fsm_reset != 13'd0) begin
             fsm_reset <= fsm_reset - 1;
         end
 
@@ -403,7 +431,7 @@ begin
             end 
         end 
 
-        else if ( go_bit == 1 && fsm_reset == 7'd0) begin
+        else if ( go_bit == 1 && fsm_reset == 13'd0) begin
             fsm_addr       <= 3'd7;
             fsm_wait       <= 6'd0;
             fsm_data       <= 4'd0;
@@ -449,7 +477,7 @@ begin
         end 
 
         else if ( ck_phs[0] && fsm_wait != 6'd0 ) begin
-            byte_wr_en <= 0;
+            byte_wr_en <= 1;
             //wait_shift <= 1;
             fsm_wait   <= fsm_wait - 1;
             if ( fsm_wait == 6'd1 ) begin
@@ -464,6 +492,7 @@ begin
             end
             //sr_data <= { 2'd0, fsm_wait[5:0] };// Marker for when Latency is wrong
         end
+
 
         else if (ck_phs[0] && fsm_data != 4'd0 ) begin
             sr_data    <= data_sr[31:24];
@@ -491,28 +520,28 @@ begin
             end
         end
 
-        else if ( rd_req == 1 ) begin
+
+        if ( rd_req == 1 ) begin
             rd_dwords_cnt <= rd_num_dwords[21:0];
         end
 
-    if ( run_jk == 1 ) begin
-        cs_loc <= 1;
-    end else if ( run_jk_sr[1:0] == 2'd0 ) begin
-        cs_loc <= 0;
-        //dram_dq_oe_l   <= 1; // Default Input
-        //dram_rwds_oe_l <= 1; // Default Input
-    end 
+        if ( run_jk == 1 ) begin
+            cs_loc <= 1;
+        end else if ( run_jk_sr[1:0] == 2'd0 ) begin
+            cs_loc <= 0;
+            //dram_dq_oe_l   <= 1; // Default Input
+            //dram_rwds_oe_l <= 1; // Default Input
+        end 
 
+        if ( fsm_data == 4'd4 && burst_wr_rdy == 0 ) begin
+            burst_wr_rdy <= 1;
+        end
+        else begin
+            burst_wr_rdy <= 0;
+        end
 
-    if ( fsm_data == 4'd4 && burst_wr_rdy == 0 ) begin
-        burst_wr_rdy <= 1;
-    end
-    else begin
-        burst_wr_rdy <= 0;
-    end
-
-    // Protection against wr_req coming in too late. There is a 5 clock window
-    burst_wr_sr[4:0] <= { burst_wr_sr[3:0], burst_wr_rdy };
+        // Protection against wr_req coming in too late. There is a 5 clock window
+        burst_wr_sr[4:0] <= { burst_wr_sr[3:0], burst_wr_rdy };
     end 
 end
 end // proc_fsm
@@ -531,8 +560,11 @@ always @ ( posedge clk ) begin : proc_rd_sr
     begin
         rwds_in_loc_p1 <= rwds_in_loc;
         rd_done        <= 0;
-        sample_now     <= 0;
         
+        `ifdef DEBUG
+            sample_now     <= 0; //Only for debugg
+        `endif
+
         if ( run_rd_jk == 0 ) begin
             rd_fsm <= 3'd4;
             rd_cnt <= 4'd0;
@@ -541,7 +573,9 @@ always @ ( posedge clk ) begin : proc_rd_sr
             if ( rd_fsm == 3'd4 ) begin
                 if ( rwds_in_loc == 1 && rwds_in_loc_p1 == 0 ) begin
                     rd_fsm     <= 3'd0;
-                    sample_now <= 1; //Only for debugg
+                    `ifdef DEBUG
+                        sample_now <= 1; //Only for debugg
+                    `endif
                     rd_sr[31:0] <= { rd_sr[23:0], dram_rd_d[7:0] };
                     if ( rd_cnt == 4'd3 ) begin
                         rd_done <= 1;// Call it a day after 4 bytes
@@ -554,7 +588,9 @@ always @ ( posedge clk ) begin : proc_rd_sr
             end 
             else if ( rd_fsm == 3'd1 ) begin
                 rd_fsm     <= 3'd4;
-                sample_now <= 1; //Only for debugg
+                `ifdef DEBUG
+                    sample_now <= 1; //Only for debugg
+                `endif
                 rd_sr[31:0] <= { rd_sr[23:0], dram_rd_d[7:0] };
                 if ( rd_cnt == 4'd3 ) begin
                     rd_done <= 1;// Call it a day after 4 bytes
@@ -572,21 +608,22 @@ always @ ( posedge clk ) begin : proc_rd_sr
     end
 end // proc_rd_sr
 
-// Pipe out some signals for bebugging using SUMP
-assign sump_dbg[0] = busy;
-assign sump_dbg[1] = run_rd_jk;
-assign sump_dbg[2] = sample_now;
-assign sump_dbg[3] = rd_done;
-assign sump_dbg[7:4] = rd_cnt[3:0];
-
+`ifdef DEBUG
+    // Pipe out some signals for bebugging using SUMP
+    assign sump_dbg[0] = busy;
+    assign sump_dbg[1] = run_rd_jk;
+    assign sump_dbg[2] = sample_now;
+    assign sump_dbg[3] = rd_done;
+    assign sump_dbg[7:4] = rd_cnt[3:0];
+`endif
 
 //-----------------------------------------------------------------------------
 // IO Flops
 //-----------------------------------------------------------------------------
-always @ ( posedge clk, posedge reset ) begin : proc_out
+always @ ( posedge clk, negedge resetn ) begin : proc_out
     begin
         
-        if ( reset == 1 ) begin
+        if ( resetn == 0 ) begin
             cs_l_reg <= 1;
             dram_ck_loc   <= 0;
             dram_ck       <= 0;
@@ -610,5 +647,37 @@ end // proc_out
 
 assign dram_cs_l = cs_l_reg;
 
+/*
+`ifdef DEBUG_ILA
+//DEBUG
+ila_2 ila_hyperram_controller (
+	.clk(clk), // input wire clk
 
+
+	.probe0(resetn), // input wire [0:0]  probe0  
+	.probe1(clk), // input wire [0:0]  probe1 
+	.probe2(rd_req), // input wire [0:0]  probe2 
+	.probe3(wr_req), // input wire [31:0]  probe3 
+	.probe4(addr), // input wire [31:0]  probe4 
+	.probe5(wr_d), // input wire [31:0]  probe5 
+	.probe6(rd_d), // input wire [31:0]  probe6 
+	.probe7(busy), // input wire [0:0]  probe7 
+	.probe8(dram_dq_in), // input wire [7:0]  probe8 
+	.probe9(dram_dq_out), // input wire [7:0]  probe9 
+	.probe10(dram_dq_oe_l), // input wire [0:0]  probe10 
+	.probe11(dram_rwds_in), // input wire [0:0]  probe11 
+	.probe12(dram_rwds_out), // input wire [0:0]  probe12 
+	.probe13(dram_rwds_oe_l), // input wire [0:0]  probe13 
+	.probe14(dram_ck), // input wire [0:0]  probe14 
+	.probe15(addr_sr), // input wire [47:0]  probe15 
+	.probe16(data_sr), // input wire [31:0]  probe16 
+	.probe17(fsm_reset), // input wire [12:0]  probe17 
+	.probe18(fsm_addr), // input wire [2:0]  probe18 
+	.probe19(fsm_data), // input wire [3:0]  probe19 
+	.probe20(fsm_wait), // input wire [5:0]  probe20 
+	.probe21(fsm_bt), // input wire [3:0]  probe21 
+	.probe22(go_bit) // input wire [0:0]  probe22
+);
+`endif
+*/
 endmodule // hyper_xface_1_8V.v

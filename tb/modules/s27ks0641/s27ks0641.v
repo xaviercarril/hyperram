@@ -105,12 +105,14 @@ module s27ks0641
                     DQ0 };
     wire RWDSin;
     assign RWDSin = RWDS_ipd;
-	
+
+`ifndef VERILATOR
 //	Load SDF File
 	initial begin 
-		$sdf_annotate("../modules/s27ks0641.sdf");
+		$sdf_annotate("./modules/s27ks0641/s27ks0641.sdf");
 	end
-    
+`endif
+
 //  internal delays
     reg DPD_in           = 0;
     reg DPD_out          = 0;
@@ -1111,6 +1113,7 @@ module s27ks0641
         #1 falling_edge_RESETNeg = 0;
     end
 
+`ifndef VERILATOR
     always @(rising_edge_CSNeg)
     begin
         disable read_process_dq1;
@@ -1120,6 +1123,7 @@ module s27ks0641
         disable read_process_rwdsR1;
         disable read_process_rwdsR2;
     end
+`endif
 
  always @(rising_edge_CKDiff)
     begin: read_process_dq1
