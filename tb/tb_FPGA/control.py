@@ -55,8 +55,8 @@ try:
 
                 if read and write:
                     if(read_data == i):
-                        #pass
-                        print("pass")
+                        pass
+                        #print("pass")
                     else:
                         print("failed at addr %d, was %d at test %d" % (i, read_data, j))
                 #print("----")

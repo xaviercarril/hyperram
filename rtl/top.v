@@ -7,7 +7,7 @@
 
 module top (
     input wire clk,
-    input wire rstn,
+    //input wire rstn,
 `ifndef ASIC
     // Serial
     input wire rx,
@@ -56,15 +56,16 @@ SB_PLL40_CORE #(
     wire hram_clk;
     assign hram_clk = clk_pll;
 
-//	integer cnt = 0;
-//
-//	always @(posedge hram_clk) begin
-//		if (cnt == 100) reset <= 0;
-//		else begin
-//			reset <= 1;
-//			cnt <= cnt + 1;
-//		end
-//	end
+    reg rstn = 0;
+	integer cnt = 0;
+
+	always @(posedge hram_clk) begin
+		if (cnt == 100) rstn <= 1;
+		else begin
+			rstn <= 0;
+			cnt <= cnt + 1;
+		end
+	end
 
     // signals for hyper ram
     wire rd_rdy;
@@ -235,8 +236,8 @@ hyperram_controller hyperram_controller(
       if (rstn == 0) begin
           mem_or_reg <= 0;
 
-          wr_byte_en <= 4'h0;			// write 4 bytes
-          rd_num_dwords <= 6'h0;		// read 1 4 byte word
+          wr_byte_en <= 4'hF;			// write 4 bytes
+          rd_num_dwords <= 6'h1;		// read 1 4 byte word
 
           rd_req <= 1'b0;
           wr_req <= 1'b0;
@@ -249,27 +250,24 @@ hyperram_controller hyperram_controller(
       end
       else begin
           if (rcv) begin
-              if (rx_byte_cnt < 5) begin
-                  rx_reg <= {rx_reg[31:0], rx_data};
-                  rx_byte_cnt <= rx_byte_cnt + 1;
+              rx_reg <= {rx_reg[31:0], rx_data};
+              rx_byte_cnt <= rx_byte_cnt + 1;
+              if (rx_byte_cnt == 5) begin
+                  case(cmd_byte)
+                      ADDR:  begin addr <= data_bytes; tx_reg <= data_bytes; end
+                      LOAD:  begin wr_d <= data_bytes; tx_reg <= data_bytes; end
+                      WRITE: begin wr_req <= 1; tx_reg <= WRITE; end
+                      READ:  tx_reg <= ram_data;
+                      READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
+                      COUNT: begin tx_reg <= count; count <= count + 1; end
+                      CONST: tx_reg <= 32'd259;
+                      default: tx_reg <= count;
+                  endcase
+                  rx_byte_cnt <= 0;
+                  // only want 4, but couldn't get it to work, so read an extra in the control program
+                  tx_bytes <= 5;
               end
-          end
-          if (!busy && rx_byte_cnt == 5) begin
-              case(cmd_byte)
-                  ADDR:  begin addr <= data_bytes; tx_reg <= data_bytes; end
-                  LOAD:  begin wr_d <= data_bytes; tx_reg <= data_bytes; end
-                  WRITE: begin wr_req <= 1; tx_reg <= WRITE; end
-                  READ:  tx_reg <= ram_data;
-                  READ_REQ: begin rd_req <= 1; tx_reg <= READ_REQ; end
-                  COUNT: begin tx_reg <= count; count <= count + 1; end
-                  CONST: tx_reg <= 32'd259;
-                  default: tx_reg <= count;
-              endcase
-              rx_byte_cnt <= 0;
-              // only want 4, but couldn't get it to work, so read an extra in the control program
-              tx_bytes <= 5;
-          end
-          else begin
+          end else begin
               rd_req <= 0;
               wr_req <= 0;
           end
@@ -289,7 +287,6 @@ hyperram_controller hyperram_controller(
               tx_strb <= 1'b0;
           end
       end
-
   end
 `endif
             

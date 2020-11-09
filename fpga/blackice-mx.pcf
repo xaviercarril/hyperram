@@ -102,7 +102,7 @@ set_io --warn-no-port dram_dq[0] 3
 #set_io leds[3] 56 # B94 cs Red led
 
 #RESET
-set_io -pullup yes rstn 49 # B81/GBin5 L0 Blue led / S2 button
+#set_io -pullup yes rstn 49 # B81/GBin5 L0 Blue led / S2 button
 
 #UART
 set_io --warn-no-port rx   61
