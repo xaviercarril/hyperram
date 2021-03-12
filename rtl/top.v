@@ -26,8 +26,11 @@ module top (
     inout wire dram_rwds,
     output wire dram_ck,
     output wire dram_rst_l,
-    output wire dram_cs_l
+    output wire [3:0] dram_cs_l_mask
 );
+
+//Module selection 0-3
+localparam MODULE = 0;
 
 //Use PLL to go from 25MHz to 50Mhz
 	wire clk_pll;
@@ -67,7 +70,7 @@ SB_PLL40_CORE #(
 		end
 	end
 
-    // signals for hyper ram
+    // signals for HyperRAM controller
     wire rd_rdy;
     reg rd_req;
     reg wr_req;
@@ -135,6 +138,20 @@ SB_PLL40_CORE #(
 	assign dram_rwds_in = dram_rwds_oe_l ? dram_rwds : 1'bz;
 
 `endif
+
+// Select Module with CS
+wire dram_cs_l;
+selectCS #(
+    .MODULES(4),
+    .RAM_SIZE(8388608),
+    .ADDR_WIDTH(32)
+) selCS (
+    .clk(clk_pll),
+    .rstn(rstn),
+    .cs_i(dram_cs_l),
+    .cs_mask_o(dram_cs_l_mask),
+    .addr_i(addr)
+);
 
 // instantiate
 hyperram_controller hyperram_controller(

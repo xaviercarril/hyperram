@@ -40,7 +40,7 @@ try:
     with open("dumpvar" + '.csv', 'wb') as csvfile:
         wr = csv.writer(csvfile, delimiter=',')
         for j in range(0, num, 1):
-            for i in range(0, 2097151, 1000):
+            for i in range(0, 2097151*4, 1000):
                 tests += 1
                 if tests % 100 == 0:
                     print(tests, i, j)

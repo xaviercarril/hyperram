@@ -35,15 +35,17 @@ set_io clk 60
 
 #pmod 5 
 #set_io PMOD[16] 136 # P45, T214
+set_io --warn-no-port dram_cs_l_mask[1] 136
 #set_io PMOD[17] 137 # P44, T215
 set_io --warn-no-port dram_dq[4] 137
 #set_io PMOD[18] 134 # P47, T212
 set_io --warn-no-port dram_dq[2] 134
 #set_io PMOD[19] 135 # p46, T213
-set_io --warn-no-port dram_cs_l 135
+set_io --warn-no-port dram_cs_l_mask[0] 135
 
 #pmod 6
 #set_io PMOD[20] 141 # P41, T219
+set_io --warn-no-port dram_cs_l_mask[2] 141
 #set_io PMOD[21] 142 # P40, T220
 set_io --warn-no-port dram_dq[3] 142
 #set_io PMOD[22] 138 # P43, T216
@@ -68,6 +70,7 @@ set_io --warn-no-port dram_dq[7] 144
 #set_io PMOD[30] 3 # P35, 3a
 set_io --warn-no-port dram_dq[0] 3
 #set_io PMOD[31] 4 # P34, 3b
+set_io --warn-no-port dram_cs_l_mask[3] 4
 
 #pmod 9
 #set_io PMOD[32] 106 # P55, SD1
